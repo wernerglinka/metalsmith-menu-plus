@@ -1,5 +1,7 @@
 # metalsmith-menu-plus
 
+> **⚠️: This plugin is a fully functional proof-of-concept. It allows you to build a hierarchical navigation structure plus page breadcrumbs. However, it is not yet fully tested and may contain bugs. Use with caution.**
+
 Automatic hierarchical navigation generator for Metalsmith sites
 
 [![metalsmith:plugin][metalsmith-badge]][metalsmith-url]
