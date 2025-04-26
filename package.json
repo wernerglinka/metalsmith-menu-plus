@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-menu-plus",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Automatic hierarchical navigation generator for Metalsmith sites",
   "type": "module",
   "main": "./lib/index.cjs",
