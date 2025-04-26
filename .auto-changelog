@@ -1,7 +1,7 @@
 {
   "output": "CHANGELOG.md",
   "template": "keepachangelog",
-  "unreleased": true,
+  "unreleased": false,
   "commitLimit": false,
   "sortCommits": "date",
   "breakingPattern": "BREAKING CHANGE:",
