@@ -5,28 +5,28 @@
  * @param {Object} options - Plugin options
  * @returns {boolean} - True if the file should be excluded
  */
-function shouldExclude(path, file, options) {
+function shouldExclude( path, file, options ) {
   // Check if navigation.navExclude is true
-  if (file && file.navigation && file.navigation.navExclude === true) {
+  if ( file && file.navigation && file.navigation.navExclude === true ) {
     return true;
   }
 
   // Check if path matches any of the exclusion patterns
-  if (options.navExcludePatterns && options.navExcludePatterns.length > 0) {
-    for (const pattern of options.navExcludePatterns) {
-      if (typeof pattern === 'string') {
+  if ( options.navExcludePatterns && options.navExcludePatterns.length > 0 ) {
+    for ( const pattern of options.navExcludePatterns ) {
+      if ( typeof pattern === 'string' ) {
         // String literal match
-        if (path === pattern) {
+        if ( path === pattern ) {
           return true;
         }
-      } else if (pattern instanceof RegExp) {
+      } else if ( pattern instanceof RegExp ) {
         // RegExp pattern match
-        if (pattern.test(path)) {
+        if ( pattern.test( path ) ) {
           return true;
         }
-      } else if (typeof pattern === 'function') {
+      } else if ( typeof pattern === 'function' ) {
         // Function that returns true if path should be excluded
-        if (pattern(path, file)) {
+        if ( pattern( path, file ) ) {
           return true;
         }
       }
@@ -41,29 +41,29 @@ function shouldExclude(path, file, options) {
  * @param {Array} navigation - The navigation structure
  * @param {Object} options - Plugin options
  */
-function generateBreadcrumbs(files, navigation, options) {
-  Object.keys(files).forEach((path) => {
+function generateBreadcrumbs( files, navigation, options ) {
+  Object.keys( files ).forEach( ( path ) => {
     const file = files[path];
-    if (!file.navigation) {
+    if ( !file.navigation ) {
       file.navigation = {};
     }
 
     // Generate URL path for this file using the same logic as in the main plugin
-    const name = path.split('/').pop().replace('.html', '');
-    const segments = path.split('/');
-    const parentDir = segments.length > 1 ? segments.slice(0, -1).join('/') : '';
+    const name = path.split( '/' ).pop().replace( '.html', '' );
+    const segments = path.split( '/' );
+    const parentDir = segments.length > 1 ? segments.slice( 0, -1 ).join( '/' ) : '';
 
     let urlPath;
-    if (segments.length === 1) {
-      urlPath = createPath(path, name, options);
+    if ( segments.length === 1 ) {
+      urlPath = createPath( path, name, options );
     } else {
-      urlPath = createChildPath(path, name, parentDir, options);
+      urlPath = createChildPath( path, name, parentDir, options );
     }
 
     // Find breadcrumb path for this file
-    const breadcrumbs = findBreadcrumbs(urlPath, navigation);
+    const breadcrumbs = findBreadcrumbs( urlPath, navigation );
     file.navigation.breadcrumbs = breadcrumbs;
-  });
+  } );
 }
 
 /**
@@ -72,23 +72,23 @@ function generateBreadcrumbs(files, navigation, options) {
  * @param {Array} navigation - The navigation structure
  * @returns {Object|null} - The section navigation item or null if not found
  */
-function findSectionByPath(sectionPath, navigation) {
+function findSectionByPath( sectionPath, navigation ) {
   // Normalize the section path for comparison
-  const normalizedSectionPath = normalizePath(sectionPath);
+  const normalizedSectionPath = normalizePath( sectionPath );
 
   // Look for the section in the navigation
-  for (const item of navigation) {
-    const normalizedItemPath = normalizePath(item.path);
+  for ( const item of navigation ) {
+    const normalizedItemPath = normalizePath( item.path );
 
     // If we found the section
-    if (normalizedItemPath === normalizedSectionPath) {
+    if ( normalizedItemPath === normalizedSectionPath ) {
       return item;
     }
 
     // Recursively search in children
-    if (item.children && item.children.length > 0) {
-      const result = findSectionByPath(sectionPath, item.children);
-      if (result) {
+    if ( item.children && item.children.length > 0 ) {
+      const result = findSectionByPath( sectionPath, item.children );
+      if ( result ) {
         return result;
       }
     }
@@ -123,11 +123,11 @@ function findSectionByPath(sectionPath, navigation) {
  * @param {Array} [currentPath=[]] - The current breadcrumb path (used recursively)
  * @returns {Array} - Array of breadcrumb items
  */
-function findBreadcrumbs(urlPath, navigation, currentPath = []) {
+function findBreadcrumbs( urlPath, navigation, currentPath = [] ) {
   // Always start with the root element if not already in path
-  if (currentPath.length === 0) {
-    const homeItem = navigation.find((item) => item.path === '/');
-    if (homeItem) {
+  if ( currentPath.length === 0 ) {
+    const homeItem = navigation.find( ( item ) => item.path === '/' );
+    if ( homeItem ) {
       currentPath = [
         {
           title: homeItem.title,
@@ -136,13 +136,13 @@ function findBreadcrumbs(urlPath, navigation, currentPath = []) {
       ];
 
       // For homepage, return early
-      if (urlPath === '/') {
+      if ( urlPath === '/' ) {
         return currentPath;
       }
     }
   }
 
-  return searchBreadcrumbs(urlPath, navigation, currentPath);
+  return searchBreadcrumbs( urlPath, navigation, currentPath );
 }
 
 /**
@@ -152,11 +152,11 @@ function findBreadcrumbs(urlPath, navigation, currentPath = []) {
  * @param {Array} currentPath - The current breadcrumb path
  * @returns {Array} - Array of breadcrumb items
  */
-function searchBreadcrumbs(urlPath, navigation, currentPath) {
+function searchBreadcrumbs( urlPath, navigation, currentPath ) {
   // Search for matching item at this level
-  for (const item of navigation) {
+  for ( const item of navigation ) {
     // Check if this is the item we're looking for
-    if (normalizePath(item.path) === normalizePath(urlPath)) {
+    if ( normalizePath( item.path ) === normalizePath( urlPath ) ) {
       return [
         ...currentPath,
         {
@@ -170,12 +170,12 @@ function searchBreadcrumbs(urlPath, navigation, currentPath) {
     if (
       item.children &&
       item.children.length &&
-      (urlPath.startsWith(`${normalizePath(item.path)}/`) || (item.path === '/' && urlPath !== '/'))
+      ( urlPath.startsWith( `${normalizePath( item.path )}/` ) || ( item.path === '/' && urlPath !== '/' ) )
     ) {
       // Add this item to the current path and search its children
       // Skip adding root again if it's already in the path
       const newPath =
-        item.path === '/' && currentPath.some((p) => p.path === '/')
+        item.path === '/' && currentPath.some( ( p ) => p.path === '/' )
           ? currentPath
           : [
               ...currentPath,
@@ -185,8 +185,8 @@ function searchBreadcrumbs(urlPath, navigation, currentPath) {
               }
             ];
 
-      const result = searchBreadcrumbs(urlPath, item.children, newPath);
-      if (result) {
+      const result = searchBreadcrumbs( urlPath, item.children, newPath );
+      if ( result ) {
         return result;
       }
     }
@@ -201,120 +201,9 @@ function searchBreadcrumbs(urlPath, navigation, currentPath) {
  * @param {string} path - The path to normalize
  * @returns {string} - Normalized path
  */
-function normalizePath(path) {
+function normalizePath( path ) {
   // Remove trailing slash except for root
-  return path === '/' ? path : path.replace(/\/$/, '');
-} /**
- * Metalsmith Navigation Plugin with Permalinks Support
- *
- * Creates a hierarchical navigation structure from files in your Metalsmith build
- * with support for permalinked URLs (e.g., page1/ instead of page1.html)
- */
-
-/**
- * Factory function for the plugin
- * @param {Object} options - Plugin options
- * @param {string} [options.metadataKey='navigation'] - The key to use in the metadata
- * @param {function} [options.sortBy] - Function to sort navigation items
- * @param {boolean} [options.usePermalinks=false] - Whether to use permalink-style URLs
- * @param {Array} [options.navExcludePatterns=[]] - Patterns (string, RegExp, or function) to exclude files from navigation
- * @param {Object} [options.navIndex={}] - Object mapping page paths to numeric index values for custom ordering
- * @param {string} [options.rootPath='/'] - The root path to start building navigation from
- * @returns {Function} - The plugin function
- */
-function navigationPlugin(options = {}) {
-  // Set default options
-  const opts = {
-    metadataKey: 'navigation',
-    sortBy: null,
-    usePermalinks: false,
-    navExcludePatterns: [],
-    navIndex: {},
-    rootPath: '/',
-    ...options
-  };
-
-  /**
-   * The actual plugin function that Metalsmith will call
-   * @param {Object} files - The Metalsmith files object
-   * @param {Object} metalsmith - The Metalsmith instance
-   * @param {Function} done - Callback function
-   */
-  return function (files, metalsmith, done) {
-    // Get the file paths as an array
-    const filePaths = Object.keys(files);
-
-    // Filter out excluded files
-    const includedPaths = filePaths.filter((path) => !shouldExclude(path, files[path], opts));
-
-    // Create the full navigation structure first
-    const fullNavigation = createNavigationStructure(includedPaths, files, opts);
-
-    // Apply custom sorting based on navIndex and sortBy function
-    sortNavigation(fullNavigation, opts);
-
-    // If rootPath is not '/', find the subsection to use as the root
-    let navigation = fullNavigation;
-    if (opts.rootPath !== '/') {
-      // Normalize the root path
-      const normalizedRootPath = normalizePath(opts.rootPath);
-
-      // Find the subsection in the full navigation
-      const rootSection = findSectionByPath(normalizedRootPath, fullNavigation);
-
-      if (rootSection) {
-        // If we found the section, use its children as the navigation
-        navigation = rootSection.children || [];
-      } else {
-        // If section not found, use empty navigation
-        navigation = [];
-      }
-    }
-
-    // Add the navigation structure to the metalsmith metadata
-    const metadata = metalsmith.metadata();
-    metadata[opts.metadataKey] = navigation;
-
-    // Generate breadcrumbs for each file and add to file metadata
-    // Use the FULL navigation for breadcrumbs to ensure complete paths
-    generateBreadcrumbs(files, fullNavigation, opts);
-
-    // Also add the current file path to each file's metadata for active state detection in templates
-    Object.keys(files).forEach((path) => {
-      const file = files[path];
-      const name = path.split('/').pop().replace('.html', '');
-      const segments = path.split('/');
-      const parentDir = segments.length > 1 ? segments.slice(0, -1).join('/') : '';
-
-      // Generate the URL path based on the same logic as the navigation
-      let urlPath;
-      if (segments.length === 1) {
-        // Root level file
-        urlPath = createPath(path, name, opts);
-      } else {
-        // Nested file
-        urlPath = createChildPath(path, name, parentDir, opts);
-      }
-
-      // Add the URL path to the file's metadata
-      file.urlPath = urlPath;
-
-      // Initialize navigation object if it doesn't exist
-      if (!file.navigation) {
-        file.navigation = {};
-      }
-
-      // Add the path to the navigation object for active path detection
-      file.navigation.path = urlPath;
-
-      // File navigation is now set up
-    });
-
-    metalsmith.metadata(metadata);
-
-    // Call the done callback to signal completion
-    done();
-  };
+  return path === '/' ? path : path.replace( /\/$/, '' );
 }
 
 /**
@@ -322,58 +211,60 @@ function navigationPlugin(options = {}) {
  * @param {Array} items - The navigation items to sort
  * @param {Object} options - Plugin options
  */
-function sortNavigation(items, options) {
-  if (!items || !items.length) {return;}
+function sortNavigation( items, options ) {
+  if ( !items || !items.length ) {
+    return;
+  }
 
   // First apply navIndex from frontmatter and options
-  if (options.navIndex && Object.keys(options.navIndex).length > 0) {
+  if ( options.navIndex && Object.keys( options.navIndex ).length > 0 ) {
     // Add a 'navIndex' property to each item based on the navIndex option (if not already set by frontmatter)
-    items.forEach((item) => {
+    items.forEach( ( item ) => {
       // Skip if navIndex is already set from file metadata
-      if (item.navIndex !== null && item.navIndex !== undefined) {
+      if ( item.navIndex !== null && item.navIndex !== undefined ) {
         return;
       }
 
       // Get the normalized path (without trailing slash for permalinks)
-      const normalizedPath = item.path.endsWith('/') ? item.path.slice(0, -1) : item.path;
+      const normalizedPath = item.path.endsWith( '/' ) ? item.path.slice( 0, -1 ) : item.path;
 
       // Apply index if it exists for this path
-      if (options.navIndex[normalizedPath] !== undefined) {
+      if ( options.navIndex[normalizedPath] !== undefined ) {
         item.navIndex = options.navIndex[normalizedPath];
-      } else if (options.navIndex[item.path] !== undefined) {
+      } else if ( options.navIndex[item.path] !== undefined ) {
         item.navIndex = options.navIndex[item.path];
       } else {
         // Default to a high number for items without explicit index
         item.navIndex = 1000;
       }
-    });
+    } );
   }
 
   // Sort items by navIndex
-  items.sort((a, b) => {
+  items.sort( ( a, b ) => {
     const indexA = a.navIndex !== null && a.navIndex !== undefined ? a.navIndex : 1000;
     const indexB = b.navIndex !== null && b.navIndex !== undefined ? b.navIndex : 1000;
     return indexA - indexB;
-  });
+  } );
 
   // Apply custom sorting function if provided
-  if (typeof options.sortBy === 'function') {
-    items.sort((a, b) => {
+  if ( typeof options.sortBy === 'function' ) {
+    items.sort( ( a, b ) => {
       // If navIndexes are the same, use sortBy function
-      if (a.navIndex === b.navIndex) {
-        return options.sortBy(a, b);
+      if ( a.navIndex === b.navIndex ) {
+        return options.sortBy( a, b );
       }
       // Otherwise keep the navIndex ordering
       return 0;
-    });
+    } );
   }
 
   // Recursively sort children
-  items.forEach((item) => {
-    if (item.children && item.children.length > 0) {
-      sortNavigation(item.children, options);
+  items.forEach( ( item ) => {
+    if ( item.children && item.children.length > 0 ) {
+      sortNavigation( item.children, options );
     }
-  });
+  } );
 }
 
 /**
@@ -383,22 +274,20 @@ function sortNavigation(items, options) {
  * @param {Object} options - Plugin options
  * @returns {Array} - Array of navigation objects with nested children
  */
-function createNavigationStructure(paths, files, options) {
+function createNavigationStructure( paths, files, options ) {
   // Initialize the root level navigation structure
-
-  // Create a proper tree structure reflecting the directory hierarchy
   const navTree = {};
 
   // First, create a map of all directories
-  paths.forEach((path) => {
-    const segments = path.split('/');
+  paths.forEach( ( path ) => {
+    const segments = path.split( '/' );
     let currentLevel = navTree;
 
     // Build the tree structure for directories
-    if (segments.length > 1) {
-      for (let i = 0; i < segments.length - 1; i++) {
+    if ( segments.length > 1 ) {
+      for ( let i = 0; i < segments.length - 1; i++ ) {
         const segment = segments[i];
-        if (!currentLevel[segment]) {
+        if ( !currentLevel[segment] ) {
           currentLevel[segment] = {
             __files: [],
             __dirs: {}
@@ -409,60 +298,79 @@ function createNavigationStructure(paths, files, options) {
     }
 
     // Add the file to the appropriate level
-    if (segments.length === 1) {
+    if ( segments.length === 1 ) {
       // Root level file
-      if (!navTree.__files) {
+      if ( !navTree.__files ) {
         navTree.__files = [];
       }
-      navTree.__files.push(path);
+      navTree.__files.push( path );
     } else {
       // Get the parent directory level
       let parentLevel = navTree;
-      for (let i = 0; i < segments.length - 2; i++) {
+      for ( let i = 0; i < segments.length - 2; i++ ) {
         parentLevel = parentLevel[segments[i]].__dirs;
       }
       const parentDir = segments[segments.length - 2];
-      parentLevel[parentDir].__files.push(path);
+      parentLevel[parentDir].__files.push( path );
     }
-  });
+  } );
 
   // Now convert the tree to navigation items
-  function processTree(tree, parentPath = '') {
+  function processTree( tree, parentPath = '' ) {
     const items = [];
 
     // Process root-level special case
-    if (parentPath === '') {
+    if ( parentPath === '' ) {
       // Add the home/index item if it exists
-      const rootIndex = tree.__files?.find((f) => f === 'index.html');
-      if (rootIndex) {
-        items.push(createNavItem('home', files[rootIndex], '/', []));
+      const rootIndex = tree.__files?.find( ( f ) => f === 'index.html' );
+      if ( rootIndex ) {
+        items.push( createNavItem( 'home', files[rootIndex], '/', [] ) );
       }
 
-      // Add all other root level files (except index.html)
-      tree.__files?.forEach((path) => {
-        if (path !== 'index.html') {
-          const name = path.replace('.html', '');
-          const urlPath = createPath(path, name, options);
-          items.push(createNavItem(name, files[path], urlPath, []));
-        }
-      });
+      // Process all directories at root level
+      Object.keys( tree ).forEach( ( dirName ) => {
+        if ( dirName !== '__files' && dirName !== '__dirs' ) {
+          // Check if there's a corresponding HTML file for this directory
+          const dirFile = `${dirName}.html`;
+          const hasMatchingFile = tree.__files?.includes( dirFile );
 
-      // Process directories
-      Object.keys(tree).forEach((dirName) => {
-        if (dirName !== '__files' && dirName !== '__dirs') {
-          const dirItem = processDirectory(dirName, tree[dirName], dirName);
-          if (dirItem) {
-            items.push(dirItem);
+          // Process the directory's children
+          const dirPath = dirName;
+          const children = processDirectory( dirName, tree[dirName], dirPath ).children;
+
+          if ( hasMatchingFile ) {
+            // If there's a matching file, add children to that nav item
+            const name = dirFile.replace( '.html', '' );
+            const urlPath = createPath( dirFile, name, options );
+            items.push( createNavItem( name, files[dirFile], urlPath, children ) );
+          } else {
+            // Otherwise create a directory item
+            const dirUrlPath = createDirectoryPath( dirPath, options );
+            const indexPath = `${dirPath}/index.html`;
+            const indexFile = files[indexPath];
+            items.push( createNavItem( dirName, indexFile || null, dirUrlPath, children ) );
           }
         }
-      });
+      } );
+
+      // Add remaining root level files (except index.html and those matching directories)
+      const processedDirs = Object.keys( tree ).filter( ( key ) => key !== '__files' && key !== '__dirs' );
+      const processedFiles = [`index.html`, ...processedDirs.map( ( dir ) => `${dir}.html` )];
+
+      tree.__files?.forEach( ( path ) => {
+        if ( !processedFiles.includes( path ) ) {
+          const name = path.replace( '.html', '' );
+          const urlPath = createPath( path, name, options );
+          items.push( createNavItem( name, files[path], urlPath, [] ) );
+        }
+      } );
     }
 
     return items;
   }
 
   // Process a directory and its contents
-  function processDirectory(dirName, dirData, dirPath) {
+  function processDirectory( dirName, dirData, dirPath ) {
     const children = [];
 
     // Check if the directory has an index file
@@ -470,39 +378,39 @@ function createNavigationStructure(paths, files, options) {
     const indexFile = files[indexPath];
 
     // Process all non-index files in this directory
-    dirData.__files?.forEach((path) => {
-      if (!path.endsWith('/index.html')) {
+    dirData.__files?.forEach( ( path ) => {
+      if ( !path.endsWith( '/index.html' ) ) {
         // Get just the filename without extension
-        const segments = path.split('/');
+        const segments = path.split( '/' );
         const fileName = segments[segments.length - 1];
-        const name = fileName.replace('.html', '');
+        const name = fileName.replace( '.html', '' );
 
         // Create the URL path
-        const urlPath = createChildPath(path, name, dirPath, options);
+        const urlPath = createChildPath( path, name, dirPath, options );
 
         // Add to children
-        children.push(createNavItem(name, files[path], urlPath, []));
+        children.push( createNavItem( name, files[path], urlPath, [] ) );
       }
-    });
+    } );
 
     // Process subdirectories
-    Object.keys(dirData.__dirs).forEach((subDirName) => {
+    Object.keys( dirData.__dirs ).forEach( ( subDirName ) => {
       const subDirPath = `${dirPath}/${subDirName}`;
-      const subDirItem = processDirectory(subDirName, dirData.__dirs[subDirName], subDirPath);
-      if (subDirItem) {
-        children.push(subDirItem);
+      const subDirItem = processDirectory( subDirName, dirData.__dirs[subDirName], subDirPath );
+      if ( subDirItem ) {
+        children.push( subDirItem );
       }
-    });
+    } );
 
     // Create the directory item (using index file metadata if available)
-    const dirUrlPath = createDirectoryPath(dirPath, options);
-    const navItem = createNavItem(dirName, indexFile || null, dirUrlPath, children);
+    const dirUrlPath = createDirectoryPath( dirPath, options );
+    const navItem = createNavItem( dirName, indexFile || null, dirUrlPath, children );
 
     return navItem;
   }
 
   // Start processing from the root
-  return processTree(navTree);
+  return processTree( navTree );
 }
 
 /**
@@ -513,24 +421,24 @@ function createNavigationStructure(paths, files, options) {
  * @param {Array} [children=[]] - Child navigation items
  * @returns {Object} - The navigation item
  */
-function createNavItem(name, fileData, path, children = []) {
+function createNavItem( name, fileData, path, children = [] ) {
   // Determine the title to use - prioritize in this order:
   // 1. navigation.navLabel (if it exists)
   // 2. file.title (if it exists)
   // 3. Formatted version of the filename
   let title;
 
-  if (fileData && fileData.navigation && fileData.navigation.navLabel) {
+  if ( fileData && fileData.navigation && fileData.navigation.navLabel ) {
     title = fileData.navigation.navLabel;
-  } else if (fileData && fileData.title) {
+  } else if ( fileData && fileData.title ) {
     title = fileData.title;
   } else {
-    title = toTitleCase(name);
+    title = toTitleCase( name );
   }
 
   // Check for custom navigation index in file metadata
   let navIndex = null;
-  if (fileData && fileData.navigation && fileData.navigation.navIndex !== undefined) {
+  if ( fileData && fileData.navigation && fileData.navigation.navIndex !== undefined ) {
     navIndex = fileData.navigation.navIndex;
   }
 
@@ -549,17 +457,16 @@ function createNavItem(name, fileData, path, children = []) {
  * @param {Object} options - Plugin options
  * @returns {string} - The URL path
  */
-function createPath(path, name, options) {
-  if (options.usePermalinks) {
+function createPath( path, name, options ) {
+  if ( options.usePermalinks ) {
     // For permalinks, we use the pattern (typically '/:path/')
-    if (name === 'index') {
+    if ( name === 'index' ) {
       return '/';
     }
     return `/${name}/`;
-  } 
-    // For regular links, we keep the original extension
-    return `/${path}`;
-  
+  }
+  // For regular links, we keep the original extension
+  return `/${path}`;
 }
 
 /**
@@ -568,13 +475,12 @@ function createPath(path, name, options) {
  * @param {Object} options - Plugin options
  * @returns {string} - The URL path
  */
-function createDirectoryPath(dirPath, options) {
-  if (options.usePermalinks) {
+function createDirectoryPath( dirPath, options ) {
+  if ( options.usePermalinks ) {
     return `/${dirPath}/`;
-  } 
-    // In non-permalink mode, link to the directory index
-    return `/${dirPath}/index.html`;
-  
+  }
+  // In non-permalink mode, link to the directory index
+  return `/${dirPath}/index.html`;
 }
 
 /**
@@ -585,18 +491,17 @@ function createDirectoryPath(dirPath, options) {
  * @param {Object} options - Plugin options
  * @returns {string} - The URL path
  */
-function createChildPath(path, name, parentDir, options) {
-  if (options.usePermalinks) {
-    if (name === 'index') {
+function createChildPath( path, name, parentDir, options ) {
+  if ( options.usePermalinks ) {
+    if ( name === 'index' ) {
       // If this is an index file, link to the parent directory
       return `/${parentDir}/`;
     }
     // For permalinks, use the clean URL format
     return `/${parentDir}/${name}/`;
-  } 
-    // For regular links, preserve the file extension
-    return `/${parentDir}/${name}.html`;
-  
+  }
+  // For regular links, preserve the file extension
+  return `/${parentDir}/${name}.html`;
 }
 
 /**
@@ -604,12 +509,124 @@ function createChildPath(path, name, parentDir, options) {
  * @param {string} str - The string to convert
  * @returns {string} - Title-cased string
  */
-function toTitleCase(str) {
+function toTitleCase( str ) {
   return str
-    .split(/[_-]/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+    .split( /[_-]/ )
+    .map( ( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase() )
+    .join( ' ' );
 }
 
-// Export the plugin
+/**
+ * Metalsmith Navigation Plugin with Permalinks Support
+ *
+ * Creates a hierarchical navigation structure from files in your Metalsmith build
+ * with support for permalinked URLs (e.g., page1/ instead of page1.html)
+ */
+
+/**
+ * Factory function for the plugin
+ * @param {Object} options - Plugin options
+ * @param {string} [options.metadataKey='navigation'] - The key to use in the metadata
+ * @param {function} [options.sortBy] - Function to sort navigation items
+ * @param {boolean} [options.usePermalinks=false] - Whether to use permalink-style URLs
+ * @param {Array} [options.navExcludePatterns=[]] - Patterns (string, RegExp, or function) to exclude files from navigation
+ * @param {Object} [options.navIndex={}] - Object mapping page paths to numeric index values for custom ordering
+ * @param {string} [options.rootPath='/'] - The root path to start building navigation from
+ * @returns {Function} - The plugin function
+ */
+function navigationPlugin( options = {} ) {
+  // Set default options
+  const opts = {
+    metadataKey: 'navigation',
+    sortBy: null,
+    usePermalinks: false,
+    navExcludePatterns: [],
+    navIndex: {},
+    rootPath: '/',
+    ...options
+  };
+
+  /**
+   * The actual plugin function that Metalsmith will call
+   * @param {Object} files - The Metalsmith files object
+   * @param {Object} metalsmith - The Metalsmith instance
+   * @param {Function} done - Callback function
+   */
+  return function ( files, metalsmith, done ) {
+    // Get the file paths as an array
+    const filePaths = Object.keys( files );
+
+    // Filter out excluded files
+    const includedPaths = filePaths.filter( ( path ) => !shouldExclude( path, files[path], opts ) );
+
+    // Create the full navigation structure first
+    const fullNavigation = createNavigationStructure( includedPaths, files, opts );
+
+    // Apply custom sorting based on navIndex and sortBy function
+    sortNavigation( fullNavigation, opts );
+
+    // If rootPath is not '/', find the subsection to use as the root
+    let navigation = fullNavigation;
+    if ( opts.rootPath !== '/' ) {
+      // Normalize the root path
+      const normalizedRootPath = normalizePath( opts.rootPath );
+
+      // Find the subsection in the full navigation
+      const rootSection = findSectionByPath( normalizedRootPath, fullNavigation );
+
+      if ( rootSection ) {
+        // If we found the section, use its children as the navigation
+        navigation = rootSection.children || [];
+      } else {
+        // If section not found, use empty navigation
+        navigation = [];
+      }
+    }
+
+    // Add the navigation structure to the metalsmith metadata
+    const metadata = metalsmith.metadata();
+    metadata[opts.metadataKey] = navigation;
+
+    // Generate breadcrumbs for each file and add to file metadata
+    // Use the FULL navigation for breadcrumbs to ensure complete paths
+    generateBreadcrumbs( files, fullNavigation, opts );
+
+    // Also add the current file path to each file's metadata for active state detection in templates
+    Object.keys( files ).forEach( ( path ) => {
+      const file = files[path];
+      const name = path.split( '/' ).pop().replace( '.html', '' );
+      const segments = path.split( '/' );
+      const parentDir = segments.length > 1 ? segments.slice( 0, -1 ).join( '/' ) : '';
+
+      // Generate the URL path based on the same logic as the navigation
+      let urlPath;
+      if ( segments.length === 1 ) {
+        // Root level file
+        urlPath = createPath( path, name, opts );
+      } else {
+        // Nested file
+        urlPath = createChildPath( path, name, parentDir, opts );
+      }
+
+      // Add the URL path to the file's metadata
+      file.urlPath = urlPath;
+
+      // Initialize navigation object if it doesn't exist
+      if ( !file.navigation ) {
+        file.navigation = {};
+      }
+
+      // Add the path to the navigation object for active path detection
+      file.navigation.path = urlPath;
+
+      // File navigation is now set up
+    } );
+
+    metalsmith.metadata( metadata );
+
+    // Call the done callback to signal completion
+    done();
+  };
+}
+
 export default navigationPlugin;

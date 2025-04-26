@@ -22,6 +22,7 @@
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
+    "format-and-lint": "npm run format && npm run lint",
     "update-coverage": "node scripts/update-coverage-badge.js 2>&1",
     "prerelease": "npm run update-coverage && git add README.md && git commit -m \"Update coverage badge in README\" || true",
     "release": "npm run build && GITHUB_TOKEN=$(grep GITHUB_TOKEN .env | cut -d '=' -f2) ./node_modules/.bin/release-it . ",

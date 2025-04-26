@@ -134,20 +134,72 @@ describe( 'metalsmith-menu-plus (CommonJS)', () => {
       // Verify structure - should only contain services, not main site pages
       assert.ok( Array.isArray( navigation ), 'Navigation should be an array' );
       assert.strictEqual( navigation.length, 3, 'Services menu should have 3 items' );
-      
+
       // Check that the items are the service pages
       const service1 = navigation.find( item => item.title === 'Service One' );
       const service2 = navigation.find( item => item.title === 'Service Two' );
       const service3 = navigation.find( item => item.title === 'Service Three' );
-      
+
       assert.ok( service1, 'Service One should exist in services menu' );
       assert.ok( service2, 'Service Two should exist in services menu' );
       assert.ok( service3, 'Service Three should exist in services menu' );
-      
+
       // Make sure no root-level items are included
       const homePage = navigation.find( item => item.title === 'Home Page' );
       assert.strictEqual( homePage, undefined, 'Home page should not be in services menu' );
-      
+
+      done();
+    } );
+  } );
+
+  // Test directory nesting in non-permalink mode
+  it( 'should properly nest directory children under parent HTML files in CommonJS mode', ( done ) => {
+    // Create test files with a directory and corresponding HTML file
+    const files = {
+      'index.html': { title: 'Home Page' },
+      'services.html': { title: 'Services Overview' },
+      'services/service1.html': { title: 'Service One' },
+      'services/service2.html': { title: 'Service Two' }
+    };
+
+    // Create metalsmith instance
+    const metalsmith = Metalsmith( 'test' )
+      .metadata( {} )
+      .source( 'src' )
+      .destination( 'build' );
+
+    // Run the plugin WITHOUT permalinks
+    const plugin = navigationPlugin( {
+      metadataKey: 'nonPermalinkMenu',
+      usePermalinks: false
+    } );
+
+    plugin( files, metalsmith, ( err ) => {
+      if ( err ) { return done( err ); }
+
+      // Check if navigation was generated
+      const navigation = metalsmith.metadata().nonPermalinkMenu;
+
+      // Find the services page
+      const servicesPage = navigation.find( item => item.title === 'Services Overview' );
+
+      // Verify structure
+      assert.ok( servicesPage, 'Services page should exist in navigation' );
+      assert.strictEqual( servicesPage.path, '/services.html', 'Services page should have path /services.html' );
+
+      // Verify children are properly nested
+      assert.ok( Array.isArray( servicesPage.children ), 'Services page should have children array' );
+      assert.strictEqual( servicesPage.children.length, 2, 'Services page should have 2 children' );
+
+      // Verify specific children
+      const service1 = servicesPage.children.find( item => item.title === 'Service One' );
+      assert.ok( service1, 'Service One should be a child of Services Overview' );
+      assert.strictEqual( service1.path, '/services/service1.html', 'Service path should include .html extension' );
+
+      // Verify no duplicate entries for directories
+      const servicesDir = navigation.find( item => item.path === '/services/' );
+      assert.strictEqual( servicesDir, undefined, 'Services directory should not exist as a separate entry' );
+
       done();
     } );
   } );
