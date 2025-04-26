@@ -16,7 +16,7 @@
     "publish": false
   },
   "hooks": {
-    "before:git:release": "npm run changelog",
+    "after:bump": "npm run changelog",
     "after:git:bump": "npm run update-coverage",
     "after:release": "echo 'Successfully released ${name} v${version}. You can now publish this to NPM manually.'"
   },

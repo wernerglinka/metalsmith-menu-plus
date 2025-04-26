@@ -14,7 +14,7 @@
     "node": ">= 18.0.0"
   },
   "scripts": {
-    "changelog": "auto-changelog -u --sort-commits date --starting-version v1.4.0 --commit-limit false --ignore-commit-pattern '((dev|chore|ci):|skip (changelog|travis)|Release)'",
+    "changelog": "auto-changelog -u --sort-commits date --starting-version v0.0.1 --commit-limit false --ignore-commit-pattern '((dev|chore|ci):|skip (changelog|travis)|Release)'",
     "coverage": "npm test && c8 report --reporter=text-lcov > ./coverage.info",
     "build": "microbundle --entry src/index.js --output lib/index.js --target node -f esm,cjs --strict --generateTypes=false",
     "prepublishOnly": "npm run build",

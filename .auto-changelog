@@ -1,0 +1,14 @@
+{
+  "output": "CHANGELOG.md",
+  "template": "keepachangelog",
+  "unreleased": true,
+  "commitLimit": false,
+  "sortCommits": "date",
+  "breakingPattern": "BREAKING CHANGE:",
+  "ignoreCommitPattern": "((dev|chore|ci):|skip (changelog|travis)|Release v)",
+  "commitGroupsSort": "title",
+  "issueUrlFormat": "https://github.com/wernerglinka/metalsmith-menu-plus/issues/{id}",
+  "compareUrlFormat": "https://github.com/wernerglinka/metalsmith-menu-plus/compare/{from}...{to}",
+  "includeBranch": ["main"],
+  "tagPattern": "v[0-9]*\\.[0-9]*\\.[0-9]*"
+}
