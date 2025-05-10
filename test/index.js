@@ -64,7 +64,7 @@ describe( 'Metalsmith Menu Plugin', () => {
       assert.strictEqual( blogItem.children.length, 3, 'Blog should have 3 children' );
 
       // Test breadcrumbs
-      const deeplyNestedFile = mockFiles[ 'page2/page2.2/page2.2.2/index.html' ];
+      const deeplyNestedFile = mockFiles['page2/page2.2/page2.2.2/index.html'];
       assert.ok( deeplyNestedFile.navigation, 'File should have navigation metadata' );
       assert.ok( Array.isArray( deeplyNestedFile.navigation.breadcrumbs ), 'Breadcrumbs should be an array' );
 
@@ -75,7 +75,7 @@ describe( 'Metalsmith Menu Plugin', () => {
   it( 'should exclude items marked with navExclude', ( done ) => {
     // Create a modified files object with exclusion metadata
     const filesWithExclusion = { ...mockFiles };
-    filesWithExclusion[ 'page4.html' ] = {
+    filesWithExclusion['page4.html'] = {
       title: 'Page 4',
       navigation: { navExclude: true }
     };
@@ -113,7 +113,7 @@ describe( 'Metalsmith Menu Plugin', () => {
   it( 'should respect navLabel and title metadata', ( done ) => {
     // Create a modified files object with navigation metadata
     const filesWithMeta = { ...mockFiles };
-    filesWithMeta[ 'blog/blogpost-1.html' ] = {
+    filesWithMeta['blog/blogpost-1.html'] = {
       title: 'Blog Post 1',
       navigation: { navLabel: 'Custom Label' }
     };
@@ -250,7 +250,7 @@ describe( 'Metalsmith Menu Plugin', () => {
       // Check that they're in reverse alphabetical order
       assert.deepStrictEqual(
         blogPostTitles,
-        [ 'Blog Post 3', 'Blog Post 2', 'Blog Post 1' ],
+        ['Blog Post 3', 'Blog Post 2', 'Blog Post 1'],
         'Blog posts should be sorted in reverse alphabetical order'
       );
 
@@ -261,13 +261,13 @@ describe( 'Metalsmith Menu Plugin', () => {
   it( 'should handle navIndex correctly from frontmatter and options', ( done ) => {
     // Create modified files with navIndex in frontmatter
     const filesWithNavIndex = { ...mockFiles };
-    filesWithNavIndex[ 'page3.html' ] = {
+    filesWithNavIndex['page3.html'] = {
       title: 'Page 3',
       navigation: { navIndex: 5 }
     };
 
     // Need to also add a navIndex for home page
-    filesWithNavIndex[ 'index.html' ] = {
+    filesWithNavIndex['index.html'] = {
       title: 'Home Page',
       navigation: { navIndex: 1 } // Ensure home page comes first
     };
@@ -313,10 +313,10 @@ describe( 'Metalsmith Menu Plugin', () => {
 
       // Verify they're in the correct positions
       const positions = navigation.map( ( item ) => item.title );
-      assert.strictEqual( positions[ 0 ], 'Home Page', 'Home should be first' );
-      assert.strictEqual( positions[ 1 ], 'Page 3', 'Page 3 should be second' );
-      assert.strictEqual( positions[ 2 ], 'Page 4', 'Page 4 should be third' );
-      assert.strictEqual( positions[ 3 ], 'Blog Index', 'Blog Index should be fourth' );
+      assert.strictEqual( positions[0], 'Home Page', 'Home should be first' );
+      assert.strictEqual( positions[1], 'Page 3', 'Page 3 should be second' );
+      assert.strictEqual( positions[2], 'Page 4', 'Page 4 should be third' );
+      assert.strictEqual( positions[3], 'Blog Index', 'Blog Index should be fourth' );
 
       done();
     } );
@@ -629,19 +629,19 @@ describe( 'Metalsmith Menu Plugin', () => {
       }
 
       // Check that the path is added to the navigation object of each file
-      assert.strictEqual( activePathFiles[ 'index.html' ].navigation.path, '/', 'Home page navigation should have path /' );
+      assert.strictEqual( activePathFiles['index.html'].navigation.path, '/', 'Home page navigation should have path /' );
       assert.strictEqual(
-        activePathFiles[ 'about.html' ].navigation.path,
+        activePathFiles['about.html'].navigation.path,
         '/about/',
         'About page navigation should have path /about/'
       );
       assert.strictEqual(
-        activePathFiles[ 'blog/index.html' ].navigation.path,
+        activePathFiles['blog/index.html'].navigation.path,
         '/blog/',
         'Blog index navigation should have path /blog/'
       );
       assert.strictEqual(
-        activePathFiles[ 'blog/post1.html' ].navigation.path,
+        activePathFiles['blog/post1.html'].navigation.path,
         '/blog/post1/',
         'Blog post navigation should have path /blog/post1/'
       );
