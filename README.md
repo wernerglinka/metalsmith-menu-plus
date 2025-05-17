@@ -9,6 +9,7 @@ Automatic hierarchical navigation generator for Metalsmith sites
 [![license: MIT][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
+[![Known Vulnerabilities](https://snyk.io/test/github/wernerglinka/metalsmith-menu-plus/badge.svg)](https://snyk.io/test/github/wernerglinka/metalsmith-menu-plus/badge)
 
 ## Features
 
