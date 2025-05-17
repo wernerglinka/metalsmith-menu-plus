@@ -16,8 +16,7 @@
     "publish": false
   },
   "hooks": {
-    "after:bump": "npm run changelog",
-    "after:git:bump": "npm run update-coverage",
+    "after:git:release": "npm run changelog && git add CHANGELOG.md && git commit -m 'Update changelog for v${version}' && git push",
     "after:release": "echo 'Successfully released ${name} v${version}. You can now publish this to NPM manually.'"
   },
   "plugins": {
