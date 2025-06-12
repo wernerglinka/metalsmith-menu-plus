@@ -17,6 +17,7 @@ Automatic hierarchical navigation generator for Metalsmith sites
 - Supports permalink-style URLs (`/page/` instead of `/page.html`)
 - Custom ordering via frontmatter or global configuration
 - Breadcrumb generation for each page
+- Automatic exclusion of draft content (`draft: true`)
 - Flexible exclusion patterns for omitting files from navigation
 - Automatic title generation from filenames
 
@@ -95,6 +96,7 @@ Individual pages can customize their navigation properties using frontmatter:
 ---
 title: About Us
 layout: page.njk
+draft: true                    # Exclude from navigation (draft content)
 navigation:
   navLabel: About Our Company  # Custom navigation label
   navIndex: 5                  # Custom order in navigation
@@ -247,19 +249,23 @@ This is useful for creating specialized navigation for different sections of you
 
 ### Custom Exclusion Rules
 
+The plugin automatically excludes files with `draft: true` in their frontmatter. You can also define additional custom exclusion patterns:
+
 ```javascript
 .use(navigationMenu({
   metadataKey: 'siteNav',
   navExcludePatterns: [
-    // Exclude draft content
-    (path, file) => file && file.draft === true,
     // Exclude specific paths
     'private/secret-page.html',
     // Exclude with regex
-    /\/temp\//
+    /\/temp\//,
+    // Exclude with custom function
+    (path, file) => file && file.private === true
   ]
 }))
 ```
+
+**Note:** Files with `draft: true` are automatically excluded and don't need to be specified in `navExcludePatterns`.
 
 ## Test Coverage
 

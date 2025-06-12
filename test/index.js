@@ -489,6 +489,65 @@ describe( 'Metalsmith Menu Plugin', () => {
     } );
   } );
 
+  it( 'should exclude files marked as draft', ( done ) => {
+    // Create test files with draft files
+    const draftTestFiles = {
+      'index.html': { title: 'Home Page' },
+      'about.html': { title: 'About Us' },
+      'draft-post.html': { title: 'Draft Post', draft: true },
+      'published-post.html': { title: 'Published Post', draft: false },
+      'blog/index.html': { title: 'Blog Index' },
+      'blog/draft-article.html': { title: 'Draft Article', draft: true },
+      'blog/published-article.html': { title: 'Published Article' }
+    };
+
+    // Create an instance of the plugin
+    const plugin = navigationPlugin( {
+      usePermalinks: true,
+      metadataKey: 'draftNav'
+    } );
+
+    // Create metalsmith instance
+    const metalsmith = createMetalsmith();
+
+    // Call the plugin
+    plugin( draftTestFiles, metalsmith, ( err ) => {
+      if ( err ) {
+        return done( err );
+      }
+
+      // Get the navigation
+      const navigation = metalsmith.metadata().draftNav;
+
+      // Verify published pages are included
+      const homePage = navigation.find( ( item ) => item.title === 'Home Page' );
+      const aboutPage = navigation.find( ( item ) => item.title === 'About Us' );
+      const publishedPost = navigation.find( ( item ) => item.title === 'Published Post' );
+      const blogIndex = navigation.find( ( item ) => item.title === 'Blog Index' );
+
+      assert.ok( homePage, 'Home page should exist in navigation' );
+      assert.ok( aboutPage, 'About page should exist in navigation' );
+      assert.ok( publishedPost, 'Published post should exist in navigation' );
+      assert.ok( blogIndex, 'Blog index should exist in navigation' );
+
+      // Verify draft pages are excluded
+      const draftPost = navigation.find( ( item ) => item.title === 'Draft Post' );
+      assert.strictEqual( draftPost, undefined, 'Draft post should be excluded from navigation' );
+
+      // Check blog children for draft exclusion
+      const publishedArticle = blogIndex.children.find( ( item ) => item.title === 'Published Article' );
+      const draftArticle = blogIndex.children.find( ( item ) => item.title === 'Draft Article' );
+
+      assert.ok( publishedArticle, 'Published article should exist in blog navigation' );
+      assert.strictEqual( draftArticle, undefined, 'Draft article should be excluded from blog navigation' );
+
+      // Verify that draft: false doesn't exclude the file
+      assert.ok( publishedPost, 'File with draft: false should be included in navigation' );
+
+      done();
+    } );
+  } );
+
   it( 'should handle all types of exclusion patterns', ( done ) => {
     // Create test files with various files for exclusion testing
     const exclusionTestFiles = {
