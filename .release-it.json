@@ -17,9 +17,7 @@
     "preRelease": false
   },
   "npm": {
-    "publish": true,
-    "skipChecks": false,
-    "ignoreVersion": false
+    "publish": false
   },
   "hooks": {
     "before:init": ["npm run lint:check", "npm test"],
