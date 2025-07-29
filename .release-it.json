@@ -14,13 +14,18 @@
     "releaseNotes": null,
     "autoGenerate": true,
     "draft": false,
-    "preRelease": false
+    "preRelease": false,
+    "tokenRef": "GH_TOKEN"
   },
   "npm": {
     "publish": false
   },
   "hooks": {
     "before:init": ["npm run lint:check", "npm test"],
+    "before:git": [
+      "gh --version || (echo 'GitHub CLI not found. Install with: brew install gh' && exit 1)",
+      "gh auth status || (echo 'GitHub CLI not authenticated. Run: gh auth login' && exit 1)"
+    ],
     "after:bump": ["npm run changelog", "git add CHANGELOG.md"],
     "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
