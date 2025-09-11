@@ -1,6 +1,6 @@
 # metalsmith-menu-plus
 
-> **⚠️: This plugin is a fully functional proof-of-concept. It allows you to build a hierarchical navigation structure plus page breadcrumbs. However, it is not yet fully tested and may contain bugs. Use with caution.**
+> This Metalsmith plugin is under active development. The API is stable, but breaking changes may occur before reaching 1.0.0.
 
 Automatic hierarchical navigation generator for Metalsmith sites
 
@@ -13,7 +13,7 @@ Automatic hierarchical navigation generator for Metalsmith sites
 
 ## Features
 
-- Creates a nested navigation structure reflecting your content hierarchy
+- Creates a nested navigation structure with your content page hierarchy
 - Supports permalink-style URLs (`/page/` instead of `/page.html`)
 - Custom ordering via frontmatter or global configuration
 - Breadcrumb generation for each page
@@ -31,7 +31,7 @@ npm install metalsmith-menu-plus
 
 This plugin follows the standard Metalsmith plugin pattern and can be used both with ESM and CommonJS.
 
-> **IMPORTANT**: This plugin must be used **before** the layout plugin in the Metalsmith build chain, because it expects HTML files.
+> **IMPORTANT**: This plugin must be used **before** the layout plugin in the Metalsmith build chain.
 
 ### ESM (preferred)
 
@@ -40,6 +40,11 @@ import metalsmith from 'metalsmith';
 import markdown from 'metalsmith-markdown';
 import layouts from 'metalsmith-layouts';
 import navMenu from 'metalsmith-menu-plus';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 
 metalsmith(__dirname)
   ...
@@ -79,14 +84,14 @@ metalsmith(__dirname)
 
 ## Options
 
-| Option             | Type                  | Default       | Description                                                                                              |
-|--------------------|----------------------|---------------|----------------------------------------------------------------------------------------------------------|
-| metadataKey        | String               | 'navigation'  | The key to use in the Metalsmith metadata where the navigation structure will be stored                  |
-| usePermalinks      | Boolean              | false         | Whether to use permalink-style URLs (e.g., `/page/` instead of `/page.html`)                            |
-| navIndex           | Object               | {}            | Custom ordering for navigation items, with paths as keys and numeric indices as values                   |
-| sortBy             | Function             | null          | Custom sorting function for navigation items at the same level with the same navIndex                     |
-| navExcludePatterns | Array                | []            | Patterns (string, RegExp, or function) to exclude files from navigation                                  |
-| rootPath           | String               | '/'           | The root path to start building the navigation from (e.g., '/blog/' to only show blog navigation)        |
+| Option             | Type     | Default      | Description                                                                                       |
+| ------------------ | -------- | ------------ | ------------------------------------------------------------------------------------------------- |
+| metadataKey        | String   | 'navigation' | The key to use in the Metalsmith metadata where the navigation structure will be stored           |
+| usePermalinks      | Boolean  | false        | Whether to use permalink-style URLs (e.g., `/page/` instead of `/page.html`)                      |
+| navIndex           | Object   | {}           | Custom ordering for navigation items, with paths as keys and numeric indices as values            |
+| sortBy             | Function | null         | Custom sorting function for navigation items at the same level with the same navIndex             |
+| navExcludePatterns | Array    | []           | Patterns (string, RegExp, or function) to exclude files from navigation                           |
+| rootPath           | String   | '/'          | The root path to start building the navigation from (e.g., '/blog/' to only show blog navigation) |
 
 ### Frontmatter Options
 
@@ -96,11 +101,11 @@ Individual pages can customize their navigation properties using frontmatter:
 ---
 title: About Us
 layout: page.njk
-draft: true                    # Exclude from navigation (draft content)
+draft: true # Exclude from navigation (draft content)
 navigation:
-  navLabel: About Our Company  # Custom navigation label
-  navIndex: 5                  # Custom order in navigation
-  navExclude: true             # Exclude this page from navigation
+  navLabel: About Our Company # Custom navigation label
+  navIndex: 5 # Custom order in navigation
+  navExclude: true # Exclude this page from navigation
 ---
 ```
 
@@ -111,25 +116,25 @@ The plugin adds a hierarchical navigation structure to the Metalsmith metadata, 
 ```javascript
 [
   {
-    title: "Home Page",
-    path: "/",
+    title: 'Home Page',
+    path: '/',
     navIndex: 0,
     children: []
   },
   {
-    title: "Blog",
-    path: "/blog/",
+    title: 'Blog',
+    path: '/blog/',
     navIndex: 10,
     children: [
       {
-        title: "First Post",
-        path: "/blog/first-post/",
+        title: 'First Post',
+        path: '/blog/first-post/',
         navIndex: null,
         children: []
       }
     ]
   }
-]
+];
 ```
 
 ### Breadcrumbs
@@ -137,7 +142,7 @@ The plugin adds a hierarchical navigation structure to the Metalsmith metadata, 
 The plugin also generates breadcrumbs for each file and adds them to the file's metadata. The breadcrumbs are accessible via:
 
 ```javascript
-navigation.breadcrumbs
+navigation.breadcrumbs;
 ```
 
 Each breadcrumb is an object with a `title` and `path` property.
@@ -147,7 +152,7 @@ Each breadcrumb is an object with a `title` and `path` property.
 The plugin adds the current page's path to the file's `navigation` object, making it easy to detect the active page in templates:
 
 ```javascript
-navigation.path
+navigation.path;
 ```
 
 This path can be compared with navigation item paths to highlight the active page in the navigation menu.
@@ -165,7 +170,7 @@ This path can be compared with navigation item paths to highlight the active pag
           <a href="{{ item.path }}" {% if navigation.path === item.path %}class="active"{% endif %}>
             {{ item.title }}
           </a>
-          
+
           {% if item.children.length > 0 %}
             <ul>
               {% for child in item.children %}
@@ -177,7 +182,7 @@ This path can be compared with navigation item paths to highlight the active pag
               {% endfor %}
             </ul>
           {% endif %}
-          
+
         </li>
       {% endfor %}
     </ul>
@@ -204,7 +209,6 @@ This path can be compared with navigation item paths to highlight the active pag
   </nav>
 {% endif %}
 ```
-
 
 ## Advanced Configuration
 
@@ -238,7 +242,7 @@ This is useful for creating specialized navigation for different sections of you
   navIndex: {
     '/': 0,           // Home page first
     '/blog': 10,      // Blog section second
-    '/about': 20      // About page third  
+    '/about': 20      // About page third
   },
   sortBy: (a, b) => {
     // Sort by title (applies to items with same navIndex)
