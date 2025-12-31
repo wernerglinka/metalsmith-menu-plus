@@ -210,7 +210,7 @@ This path can be compared with navigation item paths to highlight the active pag
 {% endif %}
 ```
 
-## Advanced Configuration
+## Configuration Examples
 
 ### Section-Specific Navigation
 
@@ -253,18 +253,83 @@ This is useful for creating specialized navigation for different sections of you
 
 ### Custom Exclusion Rules
 
-The plugin automatically excludes files with `draft: true` in their frontmatter. You can also define additional custom exclusion patterns:
+The plugin automatically excludes files with `draft: true` in their frontmatter. You can also define additional custom exclusion patterns using strings, regular expressions, or functions.
+
+#### Pattern Types
+
+| Type | Behavior | Use Case |
+| ---- | -------- | -------- |
+| String | **Exact match only** | Single specific files |
+| RegExp | Pattern matching | Folders, file patterns |
+| Function | Custom logic | Complex conditions |
+
+**Important:** String patterns perform exact path matching. To exclude entire folders, you must use RegExp or function patterns.
+
+#### Excluding Individual Files
+
+Use string patterns for exact file matches:
 
 ```javascript
 .use(navigationMenu({
   metadataKey: 'siteNav',
   navExcludePatterns: [
-    // Exclude specific paths
-    'private/secret-page.html',
-    // Exclude with regex
-    /\/temp\//,
-    // Exclude with custom function
-    (path, file) => file && file.private === true
+    '404.html',           // Matches only '404.html' at root
+    'robots.txt',         // Matches only 'robots.txt' at root
+    'admin/settings.html' // Matches only this specific file
+  ]
+}))
+```
+
+#### Excluding Entire Folders
+
+Use RegExp patterns to exclude all files within a folder:
+
+```javascript
+.use(navigationMenu({
+  metadataKey: 'siteNav',
+  navExcludePatterns: [
+    /^articles/,          // Excludes everything in 'articles/' folder
+    /^admin\//,           // Excludes everything in 'admin/' folder
+    /^docs\/internal\//,  // Excludes 'docs/internal/' subfolder
+    /\/drafts\//          // Excludes any 'drafts/' folder at any level
+  ]
+}))
+```
+
+**Note:** Do not wrap RegExp patterns in quotes. `'/^articles/'` is a string literal that won't match folder contents, while `/^articles/` is a RegExp that will.
+
+#### Using Functions for Complex Logic
+
+Use function patterns when you need access to file metadata or complex conditions:
+
+```javascript
+.use(navigationMenu({
+  metadataKey: 'siteNav',
+  navExcludePatterns: [
+    // Exclude based on file metadata
+    (path, file) => file && file.private === true,
+    // Exclude files in specific folders
+    (path) => path.startsWith('internal/'),
+    // Combine multiple conditions
+    (path, file) => {
+      return path.startsWith('beta/') && file && !file.published;
+    }
+  ]
+}))
+```
+
+#### Combined Example
+
+```javascript
+.use(navigationMenu({
+  metadataKey: 'siteNav',
+  usePermalinks: true,
+  navExcludePatterns: [
+    '404.html',                              // Exact file match
+    'robots.txt',                            // Exact file match
+    /^articles/,                             // Entire folder
+    /^admin\//,                              // Entire folder
+    (path, file) => file && file.hidden      // Metadata-based exclusion
   ]
 }))
 ```

@@ -22,9 +22,9 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
     "prepublishOnly": "npm run build",
-    "release:patch": "GH_TOKEN=$(gh auth token) release-it patch",
-    "release:minor": "GH_TOKEN=$(gh auth token) release-it minor",
-    "release:major": "GH_TOKEN=$(gh auth token) release-it major",
+    "release:patch": "GH_TOKEN=$(gh auth token) release-it patch --ci",
+    "release:minor": "GH_TOKEN=$(gh auth token) release-it minor --ci",
+    "release:major": "GH_TOKEN=$(gh auth token) release-it major --ci",
     "release:check": "npm run lint:check && npm run build && release-it --dry-run",
     "test": "c8 --include=src/**/*.js mocha 'test/index.js' 'test/cjs.test.cjs' -t 15000",
     "test:coverage": "c8 npm test",
@@ -32,7 +32,8 @@
     "test:cjs": "c8 --include=src/**/*.js mocha test/cjs.test.cjs -t 15000",
     "test:debug": "DEBUG=metalsmith-menu-plus:* npm test",
     "test:e2e": "serve -l 3000 test/fixtures",
-    "depcheck": "depcheck"
+    "depcheck": "depcheck",
+    "audit": "npm audit"
   },
   "repository": {
     "type": "git",
@@ -56,14 +57,14 @@
   "devDependencies": {
     "auto-changelog": "^2.5.0",
     "c8": "^10.1.3",
-    "eslint": "^9.32.0",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.3",
-    "metalsmith": "^2.6.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "metalsmith": "^2.6.3",
     "microbundle": "^0.15.1",
-    "mocha": "^11.7.1",
-    "prettier": "^3.6.2",
-    "release-it": "^19.0.4"
+    "mocha": "^11.7.5",
+    "prettier": "^3.7.4",
+    "release-it": "^19.2.2"
   },
   "peerDependencies": {
     "metalsmith": "^2.5.0"
