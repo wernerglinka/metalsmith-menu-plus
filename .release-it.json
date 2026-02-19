@@ -1,32 +1,20 @@
 {
-  "git": {
-    "requireBranch": "main",
-    "requireCleanWorkingDir": true,
-    "commitMessage": "Release v${version}",
-    "tag": true,
-    "tagName": "v${version}",
-    "push": true,
-    "pushTags": true
+  "hooks": {
+    "before:init": ["npm run lint", "npm test"],
+    "after:bump": "npx auto-changelog -p --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' && git add CHANGELOG.md",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   },
-  "github": {
-    "release": true,
-    "releaseName": "v${version}",
-    "releaseNotes": null,
-    "autoGenerate": true,
-    "draft": false,
-    "preRelease": false,
-    "tokenRef": "GH_TOKEN"
+  "git": {
+    "commitMessage": "Release ${version}",
+    "tagAnnotation": "Release ${version}"
   },
   "npm": {
     "publish": false
   },
-  "hooks": {
-    "before:init": ["npm run lint:check", "npm test"],
-    "before:git": [
-      "gh --version || (echo 'GitHub CLI not found. Install with: brew install gh' && exit 1)",
-      "gh auth status || (echo 'GitHub CLI not authenticated. Run: gh auth login' && exit 1)"
-    ],
-    "after:bump": ["npm run changelog", "git add CHANGELOG.md"],
-    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  "github": {
+    "release": true,
+    "releaseName": "metalsmith-menu-plus ${version}",
+    "tokenRef": "GH_TOKEN",
+    "autoGenerate": true
   }
 }

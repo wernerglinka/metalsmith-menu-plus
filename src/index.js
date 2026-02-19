@@ -140,13 +140,13 @@ function navigationPlugin( options = {} ) {
     done();
   };
 
-  // Set function name for better debugging in stack traces
-  Object.defineProperty( plugin, 'name', {
-    value: 'navigationPlugin',
-    configurable: true
-  } );
-
   return plugin;
 }
+
+// Set function name for better debugging and plugin identification
+Object.defineProperty( navigationPlugin, 'name', {
+  value: 'menuPlus',
+  configurable: true
+} );
 
 export default navigationPlugin;
