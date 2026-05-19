@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-menu-plus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatic hierarchical navigation generator for Metalsmith sites",
   "type": "module",
   "exports": "./src/index.js",
