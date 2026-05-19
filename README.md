@@ -1,7 +1,5 @@
 # metalsmith-menu-plus
 
-> This Metalsmith plugin is under active development. The API is stable, but breaking changes may occur before reaching 1.0.0.
-
 Automatic hierarchical navigation generator for Metalsmith sites
 
 [![metalsmith:plugin][metalsmith-badge]][metalsmith-url]
@@ -20,6 +18,9 @@ Automatic hierarchical navigation generator for Metalsmith sites
 - Flexible exclusion patterns for omitting files from navigation
 
 ## Requirements
+
+- Node.js **22 or newer**
+- ESM project (this plugin is ESM-only — no CommonJS build is shipped)
 
 This plugin operates on **HTML files only** (`.html`). Non-HTML files in the
 Metalsmith `files` object are ignored. Run this plugin **after** any
