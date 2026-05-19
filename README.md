@@ -428,6 +428,6 @@ MIT
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-menu-plus
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/test%20coverage-98%25-brightgreen
+[coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
 [coverage-url]: #test-coverage
 [modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
