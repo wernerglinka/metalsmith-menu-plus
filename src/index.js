@@ -33,6 +33,39 @@ import {
 } from './processors/index.js';
 import { fileUrlPath, normalizePath, shouldExclude } from './utils/index.js';
 
+const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+/**
+ * Validate user-provided options. Throws a TypeError with a clear message
+ * for any malformed input so misconfigurations surface at build start
+ * rather than as silently-wrong navigation output.
+ * @param {Options} options - User-provided options (pre-merge)
+ */
+function validateOptions(options) {
+  const fail = (msg) => {
+    throw new TypeError(`metalsmith-menu-plus: ${msg}`);
+  };
+
+  if (options.metadataKey !== undefined && (typeof options.metadataKey !== 'string' || !options.metadataKey)) {
+    fail(`option 'metadataKey' must be a non-empty string`);
+  }
+  if (options.usePermalinks !== undefined && typeof options.usePermalinks !== 'boolean') {
+    fail(`option 'usePermalinks' must be a boolean`);
+  }
+  if (options.sortBy !== undefined && options.sortBy !== null && typeof options.sortBy !== 'function') {
+    fail(`option 'sortBy' must be a function or null`);
+  }
+  if (options.navExcludePatterns !== undefined && !Array.isArray(options.navExcludePatterns)) {
+    fail(`option 'navExcludePatterns' must be an array`);
+  }
+  if (options.navIndex !== undefined && !isPlainObject(options.navIndex)) {
+    fail(`option 'navIndex' must be a plain object`);
+  }
+  if (options.rootPath !== undefined && (typeof options.rootPath !== 'string' || !options.rootPath.startsWith('/'))) {
+    fail(`option 'rootPath' must be a string starting with '/'`);
+  }
+}
+
 /**
  * Metalsmith Navigation Plugin with Permalinks Support
  *
@@ -43,8 +76,11 @@ import { fileUrlPath, normalizePath, shouldExclude } from './utils/index.js';
  *
  * @param {Options} options - Plugin configuration options
  * @returns {import('metalsmith').Plugin} Metalsmith plugin function
+ * @throws {TypeError} If any option has the wrong type
  */
 function navigationPlugin(options = {}) {
+  validateOptions(options);
+
   const opts = {
     metadataKey: 'navigation',
     sortBy: null,

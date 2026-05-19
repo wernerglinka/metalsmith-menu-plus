@@ -422,4 +422,45 @@ describe('Metalsmith Menu Plugin', () => {
     const blogDir = navigation.find((item) => item.path === '/blog/');
     assert.strictEqual(blogDir, undefined, 'Blog directory should not exist as a separate entry');
   });
+
+  describe('option validation', () => {
+    const cases = [
+      { name: 'non-string metadataKey', opts: { metadataKey: 42 }, match: /metadataKey/ },
+      { name: 'empty metadataKey', opts: { metadataKey: '' }, match: /metadataKey/ },
+      { name: 'non-boolean usePermalinks', opts: { usePermalinks: 'yes' }, match: /usePermalinks/ },
+      { name: 'non-function sortBy', opts: { sortBy: 'title' }, match: /sortBy/ },
+      {
+        name: 'non-array navExcludePatterns',
+        opts: { navExcludePatterns: 'special-case.html' },
+        match: /navExcludePatterns/
+      },
+      { name: 'array navIndex', opts: { navIndex: [] }, match: /navIndex/ },
+      { name: 'null navIndex', opts: { navIndex: null }, match: /navIndex/ },
+      { name: 'non-string rootPath', opts: { rootPath: 5 }, match: /rootPath/ },
+      { name: 'rootPath without leading slash', opts: { rootPath: 'blog/' }, match: /rootPath/ }
+    ];
+
+    for (const { name, opts, match } of cases) {
+      it(`rejects ${name}`, () => {
+        assert.throws(() => navigationPlugin(opts), { name: 'TypeError', message: match });
+      });
+    }
+
+    it('accepts no options', () => {
+      assert.doesNotThrow(() => navigationPlugin());
+    });
+
+    it('accepts valid options including null sortBy', () => {
+      assert.doesNotThrow(() =>
+        navigationPlugin({
+          metadataKey: 'siteNav',
+          usePermalinks: true,
+          sortBy: null,
+          navExcludePatterns: [],
+          navIndex: {},
+          rootPath: '/'
+        })
+      );
+    });
+  });
 });
