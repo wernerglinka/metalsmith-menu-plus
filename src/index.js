@@ -44,7 +44,7 @@ import {
  * @param {Options} options - Plugin configuration options
  * @returns {import('metalsmith').Plugin} Metalsmith plugin function
  */
-function navigationPlugin(options = {}) {
+function navigationPlugin( options = {} ) {
   const opts = {
     metadataKey: 'navigation',
     sortBy: null,
@@ -59,17 +59,17 @@ function navigationPlugin(options = {}) {
    * @param {Object} files - The Metalsmith files object
    * @param {import('metalsmith')} metalsmith - The Metalsmith instance
    */
-  const plugin = function (files, metalsmith) {
-    const htmlPaths = Object.keys(files).filter((path) => path.endsWith('.html'));
-    const includedPaths = htmlPaths.filter((path) => !shouldExclude(path, files[path], opts));
+  const plugin = function ( files, metalsmith ) {
+    const htmlPaths = Object.keys( files ).filter( ( path ) => path.endsWith( '.html' ) );
+    const includedPaths = htmlPaths.filter( ( path ) => !shouldExclude( path, files[path], opts ) );
 
-    const fullNavigation = createNavigationStructure(includedPaths, files, opts);
-    sortNavigation(fullNavigation, opts);
+    const fullNavigation = createNavigationStructure( includedPaths, files, opts );
+    sortNavigation( fullNavigation, opts );
 
     let navigation = fullNavigation;
-    if (opts.rootPath !== '/') {
-      const normalizedRootPath = normalizePath(opts.rootPath);
-      const rootSection = findSectionByPath(normalizedRootPath, fullNavigation);
+    if ( opts.rootPath !== '/' ) {
+      const normalizedRootPath = normalizePath( opts.rootPath );
+      const rootSection = findSectionByPath( normalizedRootPath, fullNavigation );
       navigation = rootSection ? rootSection.children || [] : [];
     }
 
@@ -77,28 +77,28 @@ function navigationPlugin(options = {}) {
     metadata[opts.metadataKey] = navigation;
 
     // Use the full navigation for breadcrumbs so paths are complete even when rootPath is set.
-    generateBreadcrumbs(files, htmlPaths, fullNavigation, opts);
+    generateBreadcrumbs( files, htmlPaths, fullNavigation, opts );
 
-    htmlPaths.forEach((path) => {
+    htmlPaths.forEach( ( path ) => {
       const file = files[path];
-      const urlPath = fileUrlPath(path, opts);
+      const urlPath = fileUrlPath( path, opts );
       file.urlPath = urlPath;
-      if (!file.navigation) {
+      if ( !file.navigation ) {
         file.navigation = {};
       }
       file.navigation.path = urlPath;
-    });
+    } );
 
-    metalsmith.metadata(metadata);
+    metalsmith.metadata( metadata );
   };
 
   return plugin;
 }
 
 // Set function name for better debugging and plugin identification
-Object.defineProperty(navigationPlugin, 'name', {
+Object.defineProperty( navigationPlugin, 'name', {
   value: 'menuPlus',
   configurable: true
-});
+} );
 
 export default navigationPlugin;
