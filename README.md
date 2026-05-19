@@ -8,7 +8,7 @@ Automatic hierarchical navigation generator for Metalsmith sites
 [![npm: version][npm-badge]][npm-url]
 [![license: MIT][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
-[![ESM/CommonJS][modules-badge]][npm-url]
+[![ESM][modules-badge]][npm-url]
 
 ## Features
 
@@ -34,11 +34,10 @@ npm install metalsmith-menu-plus
 
 ## Usage
 
-This plugin follows the standard Metalsmith plugin pattern and can be used both with ESM and CommonJS.
+This plugin is ESM-only. Use it in an ESM project (a `package.json` with
+`"type": "module"`, or `.mjs` files).
 
 > **IMPORTANT**: This plugin runs **after** markdown conversion and **before** the layout plugin in the Metalsmith build chain.
-
-### ESM (preferred)
 
 ```javascript
 import metalsmith from 'metalsmith';
@@ -49,29 +48,6 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-
-metalsmith(__dirname)
-  ...
-  .use(markdown()) // Convert Markdown to HTML
-  .use(navMenu({   // Then generate navigation
-    metadataKey: 'siteNav',
-    usePermalinks: true
-  }))
-  .use(layouts())  // Apply layouts
-  .build((err) => {
-    if (err) throw err;
-    console.log('Build complete!');
-  });
-```
-
-### CommonJS
-
-```javascript
-const metalsmith = require('metalsmith');
-const markdown = require('metalsmith-markdown');
-const layouts = require('metalsmith-layouts');
-const navigationMenu = require('metalsmith-menu-plus');
 
 metalsmith(__dirname)
   ...
@@ -430,4 +406,4 @@ MIT
 [license-url]: LICENSE
 [coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
 [coverage-url]: #test-coverage
-[modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
+[modules-badge]: https://img.shields.io/badge/modules-ESM-blue

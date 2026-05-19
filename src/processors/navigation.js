@@ -2,7 +2,7 @@
  * Navigation structure generation for metalsmith-menu-plus
  */
 
-import { normalizePath, createPath, createDirectoryPath, createChildPath } from '../utils/index.js';
+import { createChildPath, createDirectoryPath, createPath, normalizePath } from '../utils/index.js';
 
 /**
  * Creates a navigation item object
@@ -17,12 +17,12 @@ import { normalizePath, createPath, createDirectoryPath, createChildPath } from 
  * @param {Array} [children=[]] - Child navigation items
  * @returns {Object} The navigation item
  */
-export function createNavItem( name, fileData, path, children = [] ) {
+export function createNavItem(name, fileData, path, children = []) {
   let title;
 
-  if ( fileData && fileData.navigation && fileData.navigation.navLabel ) {
+  if (fileData?.navigation?.navLabel) {
     title = fileData.navigation.navLabel;
-  } else if ( fileData && fileData.title ) {
+  } else if (fileData?.title) {
     title = fileData.title;
   } else {
     title = name;
@@ -30,7 +30,7 @@ export function createNavItem( name, fileData, path, children = [] ) {
 
   // Check for custom navigation index in file metadata
   let navIndex = null;
-  if ( fileData && fileData.navigation && fileData.navigation.navIndex !== undefined ) {
+  if (fileData && fileData.navigation && fileData.navigation.navIndex !== undefined) {
     navIndex = fileData.navigation.navIndex;
   }
 
@@ -49,20 +49,20 @@ export function createNavItem( name, fileData, path, children = [] ) {
  * @param {Object} options - Plugin options
  * @returns {Array} Array of navigation objects with nested children
  */
-export function createNavigationStructure( paths, files, options ) {
+export function createNavigationStructure(paths, files, options) {
   // Initialize the root level navigation structure
   const navTree = {};
 
   // First, create a map of all directories
-  paths.forEach( ( path ) => {
-    const segments = path.split( '/' );
+  paths.forEach((path) => {
+    const segments = path.split('/');
     let currentLevel = navTree;
 
     // Build the tree structure for directories
-    if ( segments.length > 1 ) {
-      for ( let i = 0; i < segments.length - 1; i++ ) {
+    if (segments.length > 1) {
+      for (let i = 0; i < segments.length - 1; i++) {
         const segment = segments[i];
-        if ( !currentLevel[segment] ) {
+        if (!currentLevel[segment]) {
           currentLevel[segment] = {
             __files: [],
             __dirs: {}
@@ -73,122 +73,122 @@ export function createNavigationStructure( paths, files, options ) {
     }
 
     // Add the file to the appropriate level
-    if ( segments.length === 1 ) {
+    if (segments.length === 1) {
       // Root level file
-      if ( !navTree.__files ) {
+      if (!navTree.__files) {
         navTree.__files = [];
       }
-      navTree.__files.push( path );
+      navTree.__files.push(path);
     } else {
       // Get the parent directory level
       let parentLevel = navTree;
-      for ( let i = 0; i < segments.length - 2; i++ ) {
+      for (let i = 0; i < segments.length - 2; i++) {
         parentLevel = parentLevel[segments[i]].__dirs;
       }
       const parentDir = segments[segments.length - 2];
-      parentLevel[parentDir].__files.push( path );
+      parentLevel[parentDir].__files.push(path);
     }
-  } );
+  });
 
   // Process a directory and its contents.
   // Subdirectories are paired with sibling .html files of the same name
   // (e.g. blog/posts.html next to blog/posts/) so the file becomes the
   // nav item and the directory's contents become its children.
-  function processDirectory( dirName, dirData, dirPath ) {
+  function processDirectory(dirName, dirData, dirPath) {
     const children = [];
     const indexPath = `${dirPath}/index.html`;
     const indexFile = files[indexPath];
 
-    const subDirNames = Object.keys( dirData.__dirs );
+    const subDirNames = Object.keys(dirData.__dirs);
     const pairedFilePaths = new Set();
 
-    subDirNames.forEach( ( subDirName ) => {
+    subDirNames.forEach((subDirName) => {
       const subDirPath = `${dirPath}/${subDirName}`;
       const siblingFilePath = `${dirPath}/${subDirName}.html`;
-      const siblingFile = dirData.__files?.includes( siblingFilePath ) ? files[siblingFilePath] : null;
+      const siblingFile = dirData.__files?.includes(siblingFilePath) ? files[siblingFilePath] : null;
 
-      const subDirItem = processDirectory( subDirName, dirData.__dirs[subDirName], subDirPath );
+      const subDirItem = processDirectory(subDirName, dirData.__dirs[subDirName], subDirPath);
 
-      if ( siblingFile ) {
-        pairedFilePaths.add( siblingFilePath );
-        const urlPath = createChildPath( siblingFilePath, subDirName, dirPath, options );
-        children.push( createNavItem( subDirName, siblingFile, urlPath, subDirItem.children ) );
+      if (siblingFile) {
+        pairedFilePaths.add(siblingFilePath);
+        const urlPath = createChildPath(siblingFilePath, subDirName, dirPath, options);
+        children.push(createNavItem(subDirName, siblingFile, urlPath, subDirItem.children));
       } else {
-        children.push( subDirItem );
+        children.push(subDirItem);
       }
-    } );
+    });
 
-    dirData.__files?.forEach( ( path ) => {
-      if ( path.endsWith( '/index.html' ) ) {
+    dirData.__files?.forEach((path) => {
+      if (path.endsWith('/index.html')) {
         return;
       }
-      if ( pairedFilePaths.has( path ) ) {
+      if (pairedFilePaths.has(path)) {
         return;
       }
-      const segments = path.split( '/' );
+      const segments = path.split('/');
       const fileName = segments[segments.length - 1];
-      const name = fileName.replace( '.html', '' );
-      const urlPath = createChildPath( path, name, dirPath, options );
-      children.push( createNavItem( name, files[path], urlPath, [] ) );
-    } );
+      const name = fileName.replace('.html', '');
+      const urlPath = createChildPath(path, name, dirPath, options);
+      children.push(createNavItem(name, files[path], urlPath, []));
+    });
 
-    const dirUrlPath = createDirectoryPath( dirPath, options );
-    return createNavItem( dirName, indexFile || null, dirUrlPath, children );
+    const dirUrlPath = createDirectoryPath(dirPath, options);
+    return createNavItem(dirName, indexFile || null, dirUrlPath, children);
   }
 
   // Now convert the tree to navigation items
-  function processTree( tree ) {
+  function processTree(tree) {
     const items = [];
 
     // Add the home/index item if it exists
-    const rootIndex = tree.__files?.find( ( f ) => f === 'index.html' );
-    if ( rootIndex ) {
-      items.push( createNavItem( 'home', files[rootIndex], '/', [] ) );
+    const rootIndex = tree.__files?.find((f) => f === 'index.html');
+    if (rootIndex) {
+      items.push(createNavItem('home', files[rootIndex], '/', []));
     }
 
     // Process all directories at root level
-    Object.keys( tree ).forEach( ( dirName ) => {
-      if ( dirName !== '__files' && dirName !== '__dirs' ) {
+    Object.keys(tree).forEach((dirName) => {
+      if (dirName !== '__files' && dirName !== '__dirs') {
         // Check if there's a corresponding HTML file for this directory
         const dirFile = `${dirName}.html`;
-        const hasMatchingFile = tree.__files?.includes( dirFile );
+        const hasMatchingFile = tree.__files?.includes(dirFile);
 
         // Process the directory's children
         const dirPath = dirName;
-        const children = processDirectory( dirName, tree[dirName], dirPath ).children;
+        const children = processDirectory(dirName, tree[dirName], dirPath).children;
 
-        if ( hasMatchingFile ) {
+        if (hasMatchingFile) {
           // If there's a matching file, add children to that nav item
-          const name = dirFile.replace( '.html', '' );
-          const urlPath = createPath( dirFile, name, options );
-          items.push( createNavItem( name, files[dirFile], urlPath, children ) );
+          const name = dirFile.replace('.html', '');
+          const urlPath = createPath(dirFile, name, options);
+          items.push(createNavItem(name, files[dirFile], urlPath, children));
         } else {
           // Otherwise create a directory item
-          const dirUrlPath = createDirectoryPath( dirPath, options );
+          const dirUrlPath = createDirectoryPath(dirPath, options);
           const indexPath = `${dirPath}/index.html`;
           const indexFile = files[indexPath];
-          items.push( createNavItem( dirName, indexFile || null, dirUrlPath, children ) );
+          items.push(createNavItem(dirName, indexFile || null, dirUrlPath, children));
         }
       }
-    } );
+    });
 
     // Add remaining root level files (except index.html and those matching directories)
-    const processedDirs = Object.keys( tree ).filter( ( key ) => key !== '__files' && key !== '__dirs' );
-    const processedFiles = [`index.html`, ...processedDirs.map( ( dir ) => `${dir}.html` )];
+    const processedDirs = Object.keys(tree).filter((key) => key !== '__files' && key !== '__dirs');
+    const processedFiles = [`index.html`, ...processedDirs.map((dir) => `${dir}.html`)];
 
-    tree.__files?.forEach( ( path ) => {
-      if ( !processedFiles.includes( path ) ) {
-        const name = path.replace( '.html', '' );
-        const urlPath = createPath( path, name, options );
-        items.push( createNavItem( name, files[path], urlPath, [] ) );
+    tree.__files?.forEach((path) => {
+      if (!processedFiles.includes(path)) {
+        const name = path.replace('.html', '');
+        const urlPath = createPath(path, name, options);
+        items.push(createNavItem(name, files[path], urlPath, []));
       }
-    } );
+    });
 
     return items;
   }
 
   // Start processing from the root
-  return processTree( navTree );
+  return processTree(navTree);
 }
 
 /**
@@ -197,23 +197,23 @@ export function createNavigationStructure( paths, files, options ) {
  * @param {Array} navigation - The navigation structure
  * @returns {Object|null} The section navigation item or null if not found
  */
-export function findSectionByPath( sectionPath, navigation ) {
+export function findSectionByPath(sectionPath, navigation) {
   // Normalize the section path for comparison
-  const normalizedSectionPath = normalizePath( sectionPath );
+  const normalizedSectionPath = normalizePath(sectionPath);
 
   // Look for the section in the navigation
-  for ( const item of navigation ) {
-    const normalizedItemPath = normalizePath( item.path );
+  for (const item of navigation) {
+    const normalizedItemPath = normalizePath(item.path);
 
     // If we found the section
-    if ( normalizedItemPath === normalizedSectionPath ) {
+    if (normalizedItemPath === normalizedSectionPath) {
       return item;
     }
 
     // Recursively search in children
-    if ( item.children && item.children.length > 0 ) {
-      const result = findSectionByPath( sectionPath, item.children );
-      if ( result ) {
+    if (item.children && item.children.length > 0) {
+      const result = findSectionByPath(sectionPath, item.children);
+      if (result) {
         return result;
       }
     }
@@ -229,15 +229,15 @@ export function findSectionByPath( sectionPath, navigation ) {
  * @param {Object} options - Plugin options
  * @returns {number|undefined} The navIndex from options, or undefined if not set
  */
-function lookupOptionsNavIndex( item, options ) {
-  if ( !options.navIndex ) {
+function lookupOptionsNavIndex(item, options) {
+  if (!options.navIndex) {
     return undefined;
   }
-  if ( options.navIndex[item.path] !== undefined ) {
+  if (options.navIndex[item.path] !== undefined) {
     return options.navIndex[item.path];
   }
-  const normalizedPath = item.path !== '/' && item.path.endsWith( '/' ) ? item.path.slice( 0, -1 ) : item.path;
-  if ( options.navIndex[normalizedPath] !== undefined ) {
+  const normalizedPath = item.path !== '/' && item.path.endsWith('/') ? item.path.slice(0, -1) : item.path;
+  if (options.navIndex[normalizedPath] !== undefined) {
     return options.navIndex[normalizedPath];
   }
   return undefined;
@@ -251,35 +251,35 @@ function lookupOptionsNavIndex( item, options ) {
  * @param {Array} items - The navigation items to sort
  * @param {Object} options - Plugin options
  */
-export function sortNavigation( items, options ) {
-  if ( !items || !items.length ) {
+export function sortNavigation(items, options) {
+  if (!items?.length) {
     return;
   }
 
   // Fill in navIndex from options for items that didn't get one from frontmatter.
   // Items with no explicit index remain null and fall through to Infinity in sort.
-  items.forEach( ( item ) => {
-    if ( item.navIndex !== null && item.navIndex !== undefined ) {
+  items.forEach((item) => {
+    if (item.navIndex !== null && item.navIndex !== undefined) {
       return;
     }
-    const fromOptions = lookupOptionsNavIndex( item, options );
-    if ( fromOptions !== undefined ) {
+    const fromOptions = lookupOptionsNavIndex(item, options);
+    if (fromOptions !== undefined) {
       item.navIndex = fromOptions;
     }
-  } );
+  });
 
-  items.sort( ( a, b ) => {
+  items.sort((a, b) => {
     const ai = a.navIndex !== null && a.navIndex !== undefined ? a.navIndex : Infinity;
     const bi = b.navIndex !== null && b.navIndex !== undefined ? b.navIndex : Infinity;
-    if ( ai !== bi ) {
+    if (ai !== bi) {
       return ai - bi;
     }
-    return typeof options.sortBy === 'function' ? options.sortBy( a, b ) : 0;
-  } );
+    return typeof options.sortBy === 'function' ? options.sortBy(a, b) : 0;
+  });
 
-  items.forEach( ( item ) => {
-    if ( item.children && item.children.length > 0 ) {
-      sortNavigation( item.children, options );
+  items.forEach((item) => {
+    if (item.children && item.children.length > 0) {
+      sortNavigation(item.children, options);
     }
-  } );
+  });
 }

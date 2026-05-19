@@ -2,7 +2,7 @@
  * Breadcrumb generation for metalsmith-menu-plus
  */
 
-import { normalizePath, fileUrlPath } from '../utils/index.js';
+import { fileUrlPath, normalizePath } from '../utils/index.js';
 
 /**
  * Generate breadcrumbs for each HTML file and add to its navigation metadata.
@@ -12,15 +12,15 @@ import { normalizePath, fileUrlPath } from '../utils/index.js';
  * @param {Array} navigation - The navigation structure
  * @param {Object} options - Plugin options
  */
-export function generateBreadcrumbs( files, paths, navigation, options ) {
-  paths.forEach( ( path ) => {
+export function generateBreadcrumbs(files, paths, navigation, options) {
+  paths.forEach((path) => {
     const file = files[path];
-    if ( !file.navigation ) {
+    if (!file.navigation) {
       file.navigation = {};
     }
-    const urlPath = fileUrlPath( path, options );
-    file.navigation.breadcrumbs = findBreadcrumbs( urlPath, navigation );
-  } );
+    const urlPath = fileUrlPath(path, options);
+    file.navigation.breadcrumbs = findBreadcrumbs(urlPath, navigation);
+  });
 }
 
 /**
@@ -31,11 +31,11 @@ export function generateBreadcrumbs( files, paths, navigation, options ) {
  * @param {Array} [currentPath=[]] - The current breadcrumb path (used recursively)
  * @returns {Array} Array of breadcrumb items
  */
-export function findBreadcrumbs( urlPath, navigation, currentPath = [] ) {
+export function findBreadcrumbs(urlPath, navigation, currentPath = []) {
   // Always start with the root element if not already in path
-  if ( currentPath.length === 0 ) {
-    const homeItem = navigation.find( ( item ) => item.path === '/' );
-    if ( homeItem ) {
+  if (currentPath.length === 0) {
+    const homeItem = navigation.find((item) => item.path === '/');
+    if (homeItem) {
       currentPath = [
         {
           title: homeItem.title,
@@ -44,13 +44,13 @@ export function findBreadcrumbs( urlPath, navigation, currentPath = [] ) {
       ];
 
       // For homepage, return early
-      if ( urlPath === '/' ) {
+      if (urlPath === '/') {
         return currentPath;
       }
     }
   }
 
-  return searchBreadcrumbs( urlPath, navigation, currentPath );
+  return searchBreadcrumbs(urlPath, navigation, currentPath);
 }
 
 /**
@@ -60,11 +60,11 @@ export function findBreadcrumbs( urlPath, navigation, currentPath = [] ) {
  * @param {Array} currentPath - The current breadcrumb path
  * @returns {Array} Array of breadcrumb items
  */
-function searchBreadcrumbs( urlPath, navigation, currentPath ) {
+function searchBreadcrumbs(urlPath, navigation, currentPath) {
   // Search for matching item at this level
-  for ( const item of navigation ) {
+  for (const item of navigation) {
     // Check if this is the item we're looking for
-    if ( normalizePath( item.path ) === normalizePath( urlPath ) ) {
+    if (normalizePath(item.path) === normalizePath(urlPath)) {
       return [
         ...currentPath,
         {
@@ -76,14 +76,13 @@ function searchBreadcrumbs( urlPath, navigation, currentPath ) {
 
     // Check if this could be a parent (URL is a substring)
     if (
-      item.children &&
-      item.children.length &&
-      ( urlPath.startsWith( `${normalizePath( item.path )}/` ) || ( item.path === '/' && urlPath !== '/' ) )
+      item.children?.length &&
+      (urlPath.startsWith(`${normalizePath(item.path)}/`) || (item.path === '/' && urlPath !== '/'))
     ) {
       // Add this item to the current path and search its children
       // Skip adding root again if it's already in the path
       const newPath =
-        item.path === '/' && currentPath.some( ( p ) => p.path === '/' )
+        item.path === '/' && currentPath.some((p) => p.path === '/')
           ? currentPath
           : [
               ...currentPath,
@@ -93,8 +92,8 @@ function searchBreadcrumbs( urlPath, navigation, currentPath ) {
               }
             ];
 
-      const result = searchBreadcrumbs( urlPath, item.children, newPath );
-      if ( result ) {
+      const result = searchBreadcrumbs(urlPath, item.children, newPath);
+      if (result) {
         return result;
       }
     }

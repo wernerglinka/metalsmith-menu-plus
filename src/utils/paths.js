@@ -7,9 +7,9 @@
  * @param {string} path - The path to normalize
  * @returns {string} Normalized path
  */
-export function normalizePath( path ) {
+export function normalizePath(path) {
   // Remove trailing slash except for root
-  return path === '/' ? path : path.replace( /\/$/, '' );
+  return path === '/' ? path : path.replace(/\/$/, '');
 }
 
 /**
@@ -19,10 +19,10 @@ export function normalizePath( path ) {
  * @param {Object} options - Plugin options
  * @returns {string} The URL path
  */
-export function createPath( path, name, options ) {
-  if ( options.usePermalinks ) {
+export function createPath(path, name, options) {
+  if (options.usePermalinks) {
     // For permalinks, we use the pattern (typically '/:path/')
-    if ( name === 'index' ) {
+    if (name === 'index') {
       return '/';
     }
     return `/${name}/`;
@@ -37,8 +37,8 @@ export function createPath( path, name, options ) {
  * @param {Object} options - Plugin options
  * @returns {string} The URL path
  */
-export function createDirectoryPath( dirPath, options ) {
-  if ( options.usePermalinks ) {
+export function createDirectoryPath(dirPath, options) {
+  if (options.usePermalinks) {
     return `/${dirPath}/`;
   }
   // In non-permalink mode, link to the directory index
@@ -53,9 +53,9 @@ export function createDirectoryPath( dirPath, options ) {
  * @param {Object} options - Plugin options
  * @returns {string} The URL path
  */
-export function createChildPath( path, name, parentDir, options ) {
-  if ( options.usePermalinks ) {
-    if ( name === 'index' ) {
+export function createChildPath(_path, name, parentDir, options) {
+  if (options.usePermalinks) {
+    if (name === 'index') {
       // If this is an index file, link to the parent directory
       return `/${parentDir}/`;
     }
@@ -72,12 +72,12 @@ export function createChildPath( path, name, parentDir, options ) {
  * @param {Object} options - Plugin options
  * @returns {string} The URL path
  */
-export function fileUrlPath( path, options ) {
-  const segments = path.split( '/' );
-  const name = segments[segments.length - 1].replace( '.html', '' );
-  if ( segments.length === 1 ) {
-    return createPath( path, name, options );
+export function fileUrlPath(path, options) {
+  const segments = path.split('/');
+  const name = segments[segments.length - 1].replace('.html', '');
+  if (segments.length === 1) {
+    return createPath(path, name, options);
   }
-  const parentDir = segments.slice( 0, -1 ).join( '/' );
-  return createChildPath( path, name, parentDir, options );
+  const parentDir = segments.slice(0, -1).join('/');
+  return createChildPath(path, name, parentDir, options);
 }
