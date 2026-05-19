@@ -6,79 +6,34 @@ This is a Metalsmith plugin generated using the enhanced standards from `metalsm
 
 ## MCP Server Integration (CRITICAL)
 
-**IMPORTANT**: This plugin was created with `metalsmith-plugin-mcp-server`. When working on this plugin, AI assistants (Claude) MUST use the MCP server tools rather than creating their own implementations.
+**IMPORTANT**: This plugin was created with `metalsmith-plugin-mcp-server`.
+When working on this plugin, AI assistants (Claude) MUST use the MCP server
+tools rather than improvising equivalents.
 
 ### Essential MCP Commands
 
 ```bash
-# List all available templates
-list-templates
-
-# Get specific template content (use these exactly as provided)
-get-template plugin/CLAUDE.md
+list-templates                          # See what's available
+get-template plugin/CLAUDE.md           # Retrieve exact template content
+get-template configs/biome.json
 get-template configs/release-it.json
-get-template configs/eslint.config.js
-
-# Validate plugin and get actionable recommendations
-validate .
-
-# Generate configuration files
-configs .
-
-# Show recommended configuration templates
-show-template release-it
-show-template eslint
-
-# Update dependencies
-update-deps .
+validate .                              # Plugin validation + recommendations
+diff-template .                         # Drift check vs current scaffold
+configs .                               # Generate config files
+show-template release-it                # Reference config templates
+update-deps .                           # Dependency update
 ```
 
 ### CRITICAL RULES for AI Assistants
 
-1. **ALWAYS use MCP server templates verbatim** - Never create simplified versions
-2. **ALWAYS use `list-templates` first** to see what's available
-3. **ALWAYS use `get-template`** to retrieve exact template content
-4. **NEVER improvise or create custom implementations** when MCP server provides templates
-5. **When validation recommends templates**, use the exact commands provided
-6. **If a command seems unclear**, ask the user for clarification rather than improvising
-
-### Common Mistakes to AVOID
-
-**❌ Wrong Approach:**
-- Creating custom CLAUDE.md content instead of using `get-template plugin/CLAUDE.md`
-- Scaffolding entire new plugins when you just need a template
-- Making up template content or "simplifying" official templates
-- Ignoring validation recommendations
-- Using commands like `npx metalsmith-plugin-mcp-server scaffold ./ CLAUDE.md claude-context`
-
-**✅ Correct Approach:**
-- Use `list-templates` to see what's available
-- Use `get-template <template-name>` to get exact content
-- Follow validation recommendations exactly as provided
-- Ask for clarification when commands seem confusing
-- Always use official templates verbatim
-
-### Quick Commands
-
-**Quality & Validation:**
-```bash
-npx metalsmith-plugin-mcp-server validate . --functional  # Validate with MCP server
-npm test                                                   # Run tests with coverage
-npm run lint                                              # Lint and fix code
-```
-
-**Release Process:**
-```bash
-npm run release:patch   # Bug fixes (1.5.4 → 1.5.5)
-npm run release:minor   # New features (1.5.4 → 1.6.0)  
-npm run release:major   # Breaking changes (1.5.4 → 2.0.0)
-```
-
-**Development:**
-```bash
-npm run build          # Build ESM/CJS versions
-npm run test:coverage  # Run tests with detailed coverage
-```
+1. **Use MCP server templates verbatim** — never paraphrase or "simplify"
+2. **Run `list-templates` before guessing** at template names
+3. **When `validate` produces a recommendation, copy it exactly** — including
+   the exact command suggested
+4. **Ask the user** before modifying `.release-it.json`, `package.json`,
+   `biome.json`, or any other `.json` / `.yml` / `.config.js` file
+5. **Never set `npm.publish` to `true`** in `.release-it.json` — releases
+   here are deliberately manual
 
 ## Pre-Commit and Release Workflow
 
@@ -88,7 +43,7 @@ npm run test:coverage  # Run tests with detailed coverage
 
 ```bash
 npm run lint          # Fix linting issues
-npm run format        # Format code consistently  
+npm run format        # Format code consistently
 npm test              # Ensure all tests pass
 ```
 
@@ -133,6 +88,7 @@ npm run release:major  # For breaking changes (X.0.0)
 This plugin includes professional GitHub workflows for automated quality assurance:
 
 **GitHub Workflows** (`.github/workflows/`):
+
 - **`test.yml`**: Automated CI/CD pipeline
   - Runs on every push and pull request
   - Tests across Node.js versions
@@ -145,10 +101,12 @@ This plugin includes professional GitHub workflows for automated quality assuran
   - Requires `ANTHROPIC_API_KEY` secret in repository settings
 
 **Release Scripts** (`scripts/`):
+
 - **`release.sh`**: Manual release control with secure GitHub CLI authentication
 - **`release-notes.sh`**: Custom release notes generation filtering maintenance commits
 
 **Benefits**:
+
 - ✅ **Automated Quality Gates**: Every PR/push runs tests and updates coverage
 - ✅ **Human Release Control**: Developers control release timing, not automation
 - ✅ **Professional Standards**: Coverage tracking, AI code review, secure authentication
@@ -158,7 +116,7 @@ This plugin includes professional GitHub workflows for automated quality assuran
 This plugin supports both ESM and CommonJS:
 
 - **Source**: Write in ESM in `src/index.js`
-- **Build**: Creates both `lib/index.js` (ESM) and `lib/index.cjs` (CommonJS) 
+- **Build**: Creates both `lib/index.js` (ESM) and `lib/index.cjs` (CommonJS)
 - **Testing**: Tests run against built files for both formats
 
 ### File Organization
@@ -233,25 +191,31 @@ npm run test:coverage
 This plugin is validated against enhanced quality standards that catch common professional plugin issues. The MCP server validation includes:
 
 #### 1. Marketing Language Detection (`marketing-language`)
+
 **What it catches**: Buzzwords and marketing language in documentation
+
 - ❌ Avoid: "intelligent", "smart", "seamless", "revolutionary", "cutting-edge"
 - ✅ Use: Technical descriptions of actual functionality
 
 **Examples:**
+
 ```javascript
 // ❌ Marketing language
-"This intelligent plugin seamlessly transforms content"
+'This intelligent plugin seamlessly transforms content';
 
-// ✅ Technical description  
-"Transforms markdown content to HTML with configurable options"
+// ✅ Technical description
+'Transforms markdown content to HTML with configurable options';
 ```
 
 #### 2. Module System Consistency (`module-consistency`)
+
 **What it catches**: Dangerous CJS/ESM mixing in README examples that causes runtime errors
+
 - ❌ Avoid: Mixed `require()` and `import` in the same example
 - ✅ Use: Consistent module syntax that matches package.json type
 
 **Examples:**
+
 ```javascript
 // ❌ Mixed module systems (causes runtime errors)
 const Metalsmith = require('metalsmith');
@@ -261,17 +225,20 @@ import myPlugin from 'my-plugin';
 import Metalsmith from 'metalsmith';
 import myPlugin from 'my-plugin';
 
-// ✅ Consistent CJS  
+// ✅ Consistent CJS
 const Metalsmith = require('metalsmith');
 const myPlugin = require('my-plugin');
 ```
 
 #### 3. Hardcoded Values Detection (`hardcoded-values`)
+
 **What it catches**: Values that should be user-configurable options
+
 - ❌ Avoid: Hardcoded wordsPerMinute, viewport settings, timeouts
 - ✅ Use: Configurable options with sensible defaults
 
 **Examples:**
+
 ```javascript
 // ❌ Hardcoded values
 const wordsPerMinute = 200;
@@ -289,15 +256,19 @@ function myPlugin(options = {}) {
 ```
 
 #### 4. Performance Pattern Analysis (`performance-patterns`)
+
 **What it catches**: Objects recreated inside functions and redundant utilities
+
 - ❌ Avoid: Objects redefined in functions, redundant utilities (get, pick, identity)
 - ✅ Use: Module-level constants, established libraries
 
 **Examples:**
+
 ```javascript
 // ❌ Object recreation inside function (performance killer)
 function processFiles(files) {
-  const typeMap = { // Recreated on every call!
+  const typeMap = {
+    // Recreated on every call!
     '.md': 'markdown',
     '.html': 'html'
   };
@@ -306,7 +277,7 @@ function processFiles(files) {
 
 // ✅ Module-level constant
 const TYPE_MAP = {
-  '.md': 'markdown', 
+  '.md': 'markdown',
   '.html': 'html'
 };
 
@@ -316,7 +287,7 @@ function processFiles(files) {
 
 // ❌ Redundant utility functions
 const get = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj);
-const pick = (obj, keys) => keys.reduce((r, k) => ({...r, [k]: obj[k]}), {});
+const pick = (obj, keys) => keys.reduce((r, k) => ({ ...r, [k]: obj[k] }), {});
 
 // ✅ Use established libraries or native methods
 import { get, pick } from 'lodash';
@@ -324,11 +295,14 @@ import { get, pick } from 'lodash';
 ```
 
 #### 5. Internationalization Readiness (`i18n-readiness`)
+
 **What it catches**: English-only text outputs that prevent global plugin adoption
+
 - ❌ Avoid: Hardcoded English strings in output
 - ✅ Use: Data objects that templates can customize
 
 **Examples:**
+
 ```javascript
 // ❌ English-only output (limits global usage)
 function readingTime(content) {
@@ -341,7 +315,7 @@ function readingTime(content) {
   const minutes = Math.ceil(content.length / 1000);
   return {
     minutes,
-    seconds: (content.length / 1000 * 60) % 60,
+    seconds: ((content.length / 1000) * 60) % 60,
     words: content.split(/\s+/).length
   };
 }
@@ -355,7 +329,7 @@ npx metalsmith-plugin-mcp-server validate . --functional
 
 # The validation automatically includes all enhanced quality rules:
 # - marketing-language
-# - module-consistency  
+# - module-consistency
 # - hardcoded-values
 # - performance-patterns
 # - i18n-readiness
@@ -374,7 +348,7 @@ These enhanced quality standards help create plugins that meet professional stan
  * @returns {Function} Metalsmith plugin function
  */
 function menuPlus(options = {}) {
-  return function(files, metalsmith, callback) {
+  return function (files, metalsmith, callback) {
     // Plugin logic here
     callback();
   };
@@ -411,16 +385,16 @@ const FILE_TYPE_MAP = {
 function menuPlus(options = {}) {
   // ✅ Merge user options with defaults
   const config = { ...DEFAULT_CONFIG, ...options };
-  
-  return function(files, metalsmith, callback) {
+
+  return function (files, metalsmith, callback) {
     try {
       // ✅ Use metalsmith native methods (prefer over external deps)
       const debug = metalsmith.debug('metalsmith-menu-plus');
-      
-      Object.keys(files).forEach(filename => {
+
+      Object.keys(files).forEach((filename) => {
         // ✅ Use module-level constants
         const fileType = FILE_TYPE_MAP[path.extname(filename)];
-        
+
         if (fileType) {
           // ✅ Return data objects for i18n-readiness
           files[filename].metadata = {
@@ -449,7 +423,7 @@ export default menuPlus;
 
 ```javascript
 function menuPlus(options = {}) {
-  return function(files, metalsmith, callback) {
+  return function (files, metalsmith, callback) {
     try {
       // Plugin processing
       callback();
@@ -460,7 +434,6 @@ function menuPlus(options = {}) {
 }
 ```
 
-
 ## Release Process
 
 ### Automated Release Process
@@ -468,19 +441,22 @@ function menuPlus(options = {}) {
 The release process uses an improved release notes system that generates clean, version-specific GitHub releases:
 
 **Key Features:**
+
 - ✅ Clean, professional release notes
 - ✅ Only current version changes (no "Unreleased" sections)
 - ✅ Automatic commit filtering (excludes chore, ci, dev commits)
 - ✅ Proper GitHub markdown formatting with commit links
 
 **Release Commands:**
+
 ```bash
 npm run release:patch  # Bug fixes (1.2.3 → 1.2.4)
-npm run release:minor  # New features (1.2.3 → 1.3.0)  
+npm run release:minor  # New features (1.2.3 → 1.3.0)
 npm run release:major  # Breaking changes (1.2.3 → 2.0.0)
 ```
 
 The release notes are automatically generated using `scripts/release-notes.sh` which:
+
 1. Gets commits since the previous tag
 2. Filters out merge commits and maintenance commits
 3. Formats with proper GitHub links
@@ -493,6 +469,7 @@ The release notes are automatically generated using `scripts/release-notes.sh` w
 - Code properly linted and formatted
 
 This automatically:
+
 - Updates version in package.json
 - Generates changelog
 - Creates git tag
@@ -506,15 +483,19 @@ This automatically:
 When developing this plugin, follow these patterns to pass enhanced quality validation:
 
 #### Documentation Writing
+
 ```markdown
 <!-- ❌ Marketing language -->
+
 This intelligent plugin seamlessly transforms your content with cutting-edge algorithms.
 
-<!-- ✅ Technical description -->  
+<!-- ✅ Technical description -->
+
 Transforms markdown files to HTML with configurable syntax highlighting and custom template support.
 ```
 
 #### README Examples
+
 ```javascript
 // ❌ Mixed module systems (causes runtime errors when copy-pasted)
 const Metalsmith = require('metalsmith');
@@ -526,6 +507,7 @@ import myPlugin from 'my-plugin';
 ```
 
 #### Configuration Management
+
 ```javascript
 // ❌ Hardcoded values
 function myPlugin() {
@@ -544,6 +526,7 @@ function myPlugin(options = {}) {
 ```
 
 #### Performance Optimization
+
 ```javascript
 // ❌ Object recreation (performance killer)
 function processFiles(files) {
@@ -559,18 +542,19 @@ function processFiles(files) {
 ```
 
 #### Internationalization Support
+
 ```javascript
 // ❌ English-only output
 function getReadingTime(wordCount) {
-  return `${Math.ceil(wordCount/200)} minute read`;
+  return `${Math.ceil(wordCount / 200)} minute read`;
 }
 
 // ✅ Return data for template customization
 function getReadingTime(wordCount) {
   return {
-    minutes: Math.ceil(wordCount/200),
+    minutes: Math.ceil(wordCount / 200),
     words: wordCount,
-    estimatedSeconds: (wordCount/200) * 60
+    estimatedSeconds: (wordCount / 200) * 60
   };
 }
 ```
@@ -603,7 +587,7 @@ import { debuglog } from 'util';
 const debug = debuglog('metalsmith-menu-plus');
 
 function menuPlus(options = {}) {
-  return function(files, metalsmith, callback) {
+  return function (files, metalsmith, callback) {
     debug('Processing %d files', Object.keys(files).length);
     // ... plugin logic
   };
@@ -628,9 +612,11 @@ import menuPlus from 'metalsmith-menu-plus';
 const metalsmith = Metalsmith(__dirname)
   .source('src')
   .destination('dist')
-  .use(menuPlus({
-    // your options
-  }))
+  .use(
+    menuPlus({
+      // your options
+    })
+  )
   .build((err) => {
     if (err) throw err;
     console.log('Build complete!');

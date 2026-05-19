@@ -60,3 +60,4 @@ jspm_packages/
 
 # Project specific
 /notes/
+.claude/

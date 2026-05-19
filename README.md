@@ -9,7 +9,6 @@ Automatic hierarchical navigation generator for Metalsmith sites
 [![license: MIT][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-menu-plus/badge.svg)](https://snyk.io/test/npm/metalsmith-menu-plus)
 
 ## Features
 
@@ -19,7 +18,13 @@ Automatic hierarchical navigation generator for Metalsmith sites
 - Breadcrumb generation for each page
 - Automatic exclusion of draft content (`draft: true`)
 - Flexible exclusion patterns for omitting files from navigation
-- Automatic title generation from filenames
+
+## Requirements
+
+This plugin operates on **HTML files only** (`.html`). Non-HTML files in the
+Metalsmith `files` object are ignored. Run this plugin **after** any
+markdown-to-HTML conversion (e.g. `metalsmith-markdown`) and **before** your
+layout plugin.
 
 ## Installation
 
@@ -31,7 +36,7 @@ npm install metalsmith-menu-plus
 
 This plugin follows the standard Metalsmith plugin pattern and can be used both with ESM and CommonJS.
 
-> **IMPORTANT**: This plugin must be used **before** the layout plugin in the Metalsmith build chain.
+> **IMPORTANT**: This plugin runs **after** markdown conversion and **before** the layout plugin in the Metalsmith build chain.
 
 ### ESM (preferred)
 
@@ -92,6 +97,19 @@ metalsmith(__dirname)
 | sortBy             | Function | null         | Custom sorting function for navigation items at the same level with the same navIndex             |
 | navExcludePatterns | Array    | []           | Patterns (string, RegExp, or function) to exclude files from navigation                           |
 | rootPath           | String   | '/'          | The root path to start building the navigation from (e.g., '/blog/' to only show blog navigation) |
+
+### Navigation Titles
+
+The display title for each navigation item is resolved in this order:
+
+1. `navigation.navLabel` from the page's frontmatter
+2. `title` from the page's frontmatter
+3. The raw filename (without `.html`)
+
+The filename fallback is used **verbatim** — no transformation, no title-casing.
+A page named `about-us.html` with no frontmatter title will appear in the
+navigation as `about-us`. Set `title` or `navigation.navLabel` in frontmatter
+for human-readable labels.
 
 ### Frontmatter Options
 
@@ -257,11 +275,11 @@ The plugin automatically excludes files with `draft: true` in their frontmatter.
 
 #### Pattern Types
 
-| Type | Behavior | Use Case |
-| ---- | -------- | -------- |
-| String | **Exact match only** | Single specific files |
-| RegExp | Pattern matching | Folders, file patterns |
-| Function | Custom logic | Complex conditions |
+| Type     | Behavior             | Use Case               |
+| -------- | -------------------- | ---------------------- |
+| String   | **Exact match only** | Single specific files  |
+| RegExp   | Pattern matching     | Folders, file patterns |
+| Function | Custom logic         | Complex conditions     |
 
 **Important:** String patterns perform exact path matching. To exclude entire folders, you must use RegExp or function patterns.
 
