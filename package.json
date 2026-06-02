@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/wernerglinka/metalsmith-menu-plus",
   "devDependencies": {
-    "@biomejs/biome": "2.4.15",
+    "@biomejs/biome": "2.4.16",
     "auto-changelog": "^2.5.0",
     "metalsmith": "^2.7.0",
     "release-it": "^20.0.1"
