@@ -407,4 +407,4 @@ MIT
 [license-url]: LICENSE
 [coverage-badge]: https://img.shields.io/badge/test%20coverage-97%25-brightgreen
 [coverage-url]: #test-coverage
-[modules-badge]: https://img.shields.io/badge/modules-ESM-blue
+[modules-badge]: https://img.shields.io/badge/module-ESM-blue
